@@ -1,14 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const noAuth = { auth_token: null, user: null, exp: null, logged_in: false };
+
 export const authSlice = createSlice({
   name: "auth",
-  initialState: { auth_token: null, user: null, logged_in: false },
+  initialState: { ...noAuth },
   reducers: {
     logIn: (_, action) => {
       return { ...action.payload, logged_in: true };
     },
     logOut: () => {
-      return { auth_token: null, user: null, logged_in: false };
+      return { ...noAuth };
     },
   },
 });

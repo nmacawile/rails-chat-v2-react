@@ -6,8 +6,8 @@ export const authenticate = async (email, password) => {
       email,
       password,
     });
-    const { auth_token, user } = response.data;
-    return { auth_token, user };
+    const { auth_token, user, exp } = response.data;
+    return { auth_token, user, exp };
   } catch (error) {
     const errorMessage = error.response?.data?.message || error.message;
     console.error("Service error:", errorMessage);

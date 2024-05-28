@@ -33,13 +33,14 @@ describe("authThunks", () => {
     updated_at: timestamp,
   };
   const auth_token = "token";
+  const exp = Date.now();
 
   describe("when successful login", () => {
     it("dispatches logIn reducer", async () => {
-      axiosMock.onPost("/api/v1/auth/login").reply(200, { user, auth_token });
+      axiosMock.onPost("/api/v1/auth/login").reply(200, { user, auth_token, exp });
 
       const expectedActions = [
-        { type: "auth/logIn", payload: { user, auth_token } },
+        { type: "auth/logIn", payload: { user, auth_token, exp } },
       ];
 
       await store.dispatch(loginThunk(email, password));

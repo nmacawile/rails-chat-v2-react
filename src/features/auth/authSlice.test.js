@@ -14,7 +14,7 @@ describe("authSlice", () => {
         updated_at: timestamp,
       },
     };
-    const unauthenticated = { auth_token: null, user: null, logged_in: false };
+    const unauthenticated = { auth_token: null, user: null, exp: null, logged_in: false };
 
     it("should store the user's credentials", () => {
       const newState = authSlice(unauthenticated, logIn(creds));
