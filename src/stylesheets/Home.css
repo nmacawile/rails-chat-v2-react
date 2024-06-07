@@ -1,0 +1,51 @@
+/* align self messages to the right */
+.mine {
+  align-self: end;
+  text-align: right;
+}
+
+/* apply border radii to non-self messages */
+.message:not(.mine) p {
+  border-top-right-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+}
+
+/* apply border radii to self messages */
+.message:is(.mine) p {
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+  border-top-left-radius: 1.5rem;
+  border-bottom-left-radius: 1.5rem;
+}
+
+/* round corners of the first message of the non-self messages cluster */
+.message:is(.mine) + .message:not(.mine) p,
+.message:not(.mine):is(:first-child) p {
+  border-top-left-radius: 1.5rem;
+}
+
+/* round corners of the first message of the self messages cluster */
+.message:not(.mine) + .message:is(.mine) p,
+.message:is(.mine):is(:first-child) p {
+  border-top-right-radius: 1.5rem;
+}
+
+/* add margin to the last message of the cluster */
+.message:is(.mine):has(+ :not(.mine)),
+.message:not(.mine):has(+ .mine) {
+  margin-bottom: 1rem;
+}
+
+/* round corners of the last message of the self messages cluster */
+.message:is(.mine):has(+ :not(.mine)) p,
+.message:is(.mine):last-child p {
+  border-bottom-right-radius: 1.5rem;
+}
+
+/* round corners of the last message of the non-self messages cluster */
+.message:not(.mine):has(+ .mine) p,
+.message:not(.mine):last-child p {
+  border-bottom-left-radius: 1.5rem;
+}
