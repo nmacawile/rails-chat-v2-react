@@ -1,5 +1,6 @@
 import SearchForm from "./SearchForm";
 import "../stylesheets/Home.css";
+import ChatBar from "./ChatBar";
 
 export function Home() {
   const chatMessages = [
@@ -172,7 +173,9 @@ export function Home() {
             })}
           </ul>
         </section>
-        <footer className="flex flex-row p-4 border-t border-gray-400/[.8] h-24"></footer>
+        <footer className="flex flex-row border-t border-gray-400/[.8]">
+          <ChatBar />
+        </footer>
       </main>
     </div>
   );

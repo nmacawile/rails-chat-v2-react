@@ -1,0 +1,6 @@
+/* placeholder */
+[role="textarea"]:empty::before {
+  content: "Aa";
+  color: rgb(161, 161, 170);
+  cursor: text;
+}
