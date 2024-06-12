@@ -9,8 +9,24 @@ export function ChatBar() {
     setMessage(content);
   };
 
+  const submitMessage = () => {
+    console.log("submit");
+  };
+
+  const buttonSubmit = (event) => {
+    event.preventDefault();
+    submitMessage();
+  };
+
+  const keystrokeSubmit = (event) => {
+    if (event.shiftKey && event.key == "Enter") {
+      event.preventDefault();
+      submitMessage();
+    }
+  };
+
   return (
-    <form className="w-full">
+    <form className="w-full" onSubmit={buttonSubmit}>
       <div className="flex items-end px-3 py-2">
         <button
           type="button"
@@ -69,6 +85,7 @@ export function ChatBar() {
         <div
           role="textarea"
           onBlur={writeMessage}
+          onKeyDown={keystrokeSubmit}
           dangerouslySetInnerHTML={{ __html: message }}
           className="mx-4 p-2.5 w-full max-h-32 overflow-y-auto text-sm text-white rounded-sm outline-none focus:ring-4 ring-purple-500 focus:border-purpler-500"
           placeholder="Aa"
