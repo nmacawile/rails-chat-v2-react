@@ -1,6 +1,6 @@
 import configureMockStore from "redux-mock-store";
 import { thunk } from "redux-thunk";
-import axiosInstance from "../axios/axiosInstance";
+import axiosUnauthInstance from "../axios/axiosUnauthInstance";
 import MockAdapter from "axios-mock-adapter";
 import { loginThunk } from "./authThunks";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
@@ -14,7 +14,7 @@ describe("authThunks", () => {
 
   beforeEach(() => {
     store = mockStore({ auth: {} });
-    axiosMock = new MockAdapter(axiosInstance);
+    axiosMock = new MockAdapter(axiosUnauthInstance);
   });
 
   afterEach(() => {
@@ -37,7 +37,9 @@ describe("authThunks", () => {
 
   describe("when successful login", () => {
     it("dispatches logIn reducer", async () => {
-      axiosMock.onPost("/api/v1/auth/login").reply(200, { user, auth_token, exp });
+      axiosMock
+        .onPost("/api/v1/auth/login")
+        .reply(200, { user, auth_token, exp });
 
       const expectedActions = [
         { type: "auth/logIn", payload: { user, auth_token, exp } },
