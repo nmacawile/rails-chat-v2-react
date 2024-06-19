@@ -23,14 +23,13 @@ describe("authThunks", () => {
 
   const email = "foobar@email.com";
   const password = "password";
-  const timestamp = new Date().toISOString();
   const user = {
     id: 999,
     first_name: "Foo",
     last_name: "Bar",
+    full_name: "Foo Bar",
     email: "foobar@email.com",
-    created_at: timestamp,
-    updated_at: timestamp,
+    handle: "foobar",
   };
   const auth_token = "token";
   const exp = Date.now();
