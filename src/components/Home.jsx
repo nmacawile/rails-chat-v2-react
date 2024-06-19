@@ -1,6 +1,9 @@
 import SearchForm from "./SearchForm";
 import "../stylesheets/Home.css";
 import ChatBar from "./ChatBar";
+import { getChats } from "../services/chatsService";
+import { useEffect } from "react";
+import ChatSelection from "./ChatSelection";
 
 export function Home() {
   const chatMessages = [
@@ -96,45 +99,16 @@ export function Home() {
     },
   ];
 
-  const userList = () => {
-    const list = [];
-    for (let i = 0; i < 20; i++) {
-      list.push(
-        <li key={`k-${i}`} className={["flex", "p-2", "rounded-lg"].join(" ")}>
-          <div>
-            <div className="bg-purple-400 h-10 w-10 rounded-full"></div>
-          </div>
-          <span className="ms-2.5 leading-none text-white">
-            FirstName LastName
-          </span>
-        </li>
-      );
-    }
-
-    return list;
-  };
+  useEffect(() => {
+    (async () => {
+      const userChats = await getChats();
+      console.log(userChats);
+    })();
+  }, []);
 
   return (
     <div className="flex gap-4 flex-row w-full h-full">
-      <aside className="flex flex-col overflow-hidden w-96 shrink-0 h-full bg-gray-900/[.8] rounded-lg ">
-        <header className="p-4 border-b border-gray-400/[.8] space-y-2">
-          <h2 className="text-xl font-bold text-white">Chats</h2>
-          <SearchForm />
-        </header>
-
-        <section className="overflow-auto h-full p-4">
-          <ul className="flex flex-col align-center gap-2">{userList()}</ul>
-        </section>
-
-        <footer className="flex flex-row p-4 border-t border-gray-400/[.8]">
-          <div>
-            <div className="bg-purple-400 h-10 w-10 rounded-full"></div>
-          </div>
-          <span className="ms-2.5 leading-none text-white">
-            Authenticated User
-          </span>
-        </footer>
-      </aside>
+      <ChatSelection />
 
       <main className="flex flex-col w-full h-full bg-gray-900/[.8] rounded-lg overflow-hidden">
         <header className="flex flex-row gap-4 items-start p-4 border-b border-gray-400/[.8] space-y-2">
