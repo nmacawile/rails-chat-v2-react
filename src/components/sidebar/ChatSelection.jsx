@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getChats } from "../services/chatsService";
-import SearchForm from "./SearchForm";
+import { getChats } from "../../services/chatsService";
+import SearchForm from "../SearchForm";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 

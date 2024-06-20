@@ -3,13 +3,13 @@ import { render, screen, waitFor, act } from "@testing-library/react";
 import configureMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import ChatSelection from "./ChatSelection";
-import { getChats } from "../services/chatsService";
-import { chatsFixture } from "../../tests/fixtures/chatsFixture";
-import { authUserFixture } from "../../tests/fixtures/usersFixture";
+import { getChats } from "../../services/chatsService";
+import { chatsFixture } from "../../../tests/fixtures/chatsFixture";
+import { authUserFixture } from "../../../tests/fixtures/usersFixture";
 import { BrowserRouter } from "react-router-dom";
 
 const mockStore = configureMockStore([]);
-vi.mock("../services/chatsService");
+vi.mock("../../services/chatsService");
 
 describe("ChatSelection Component", () => {
   const store = mockStore({

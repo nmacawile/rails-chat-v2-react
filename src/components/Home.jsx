@@ -3,7 +3,7 @@ import "../stylesheets/Home.css";
 import ChatBar from "./ChatBar";
 import { getChats } from "../services/chatsService";
 import { useEffect } from "react";
-import ChatSelection from "./ChatSelection";
+import ChatSelection from "./sidebar/ChatSelection.jsx";
 
 export function Home() {
   const chatMessages = [
