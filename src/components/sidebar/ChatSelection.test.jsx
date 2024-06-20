@@ -31,14 +31,6 @@ describe("ChatSelection Component", () => {
     vi.clearAllMocks();
   });
 
-  it("shows authenticated user's full name", async () => {
-    getChats = vi.fn().mockResolvedValue([]);
-    await act(() => {
-      renderComponent();
-    });
-    expect(screen.getByText("Foo Bar")).toBeInTheDocument();
-  });
-
   it("lists all chats joined by the user", async () => {
     getChats = vi.fn().mockResolvedValue(chatsFixture);
     await act(() => {

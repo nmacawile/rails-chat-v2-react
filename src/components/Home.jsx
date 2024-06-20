@@ -1,9 +1,8 @@
-import SearchForm from "./SearchForm";
 import "../stylesheets/Home.css";
 import ChatBar from "./ChatBar";
 import { getChats } from "../services/chatsService";
 import { useEffect } from "react";
-import ChatSelection from "./sidebar/ChatSelection.jsx";
+import Sidebar from "./sidebar/Sidebar.jsx";
 
 export function Home() {
   const chatMessages = [
@@ -108,7 +107,7 @@ export function Home() {
 
   return (
     <div className="flex gap-4 flex-row w-full h-full">
-      <ChatSelection />
+      <Sidebar />
 
       <main className="flex flex-col w-full h-full bg-gray-900/[.8] rounded-lg overflow-hidden">
         <header className="flex flex-row gap-4 items-start p-4 border-b border-gray-400/[.8] space-y-2">
