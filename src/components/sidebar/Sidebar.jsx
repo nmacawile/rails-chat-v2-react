@@ -1,8 +1,11 @@
 import SearchForm from "./SearchForm";
 import ChatSelection from "./ChatSelection.jsx";
 import UserInfoPanel from "./UserInfoPanel.jsx";
+import { useState } from "react";
 
 export function Sidebar() {
+  const [searchMode, setSearchMode] = useState(false);
+
   return (
     <aside
       className={[
@@ -27,7 +30,7 @@ export function Sidebar() {
         <h2 className={["text-xl", "font-bold", "text-white"].join(" ")}>
           Chats
         </h2>
-        <SearchForm />
+        <SearchForm searchMode={searchMode} setSearchMode={setSearchMode} />
       </header>
 
       <nav className={["overflow-y-auto", "h-full", "p-4"].join(" ")}>
