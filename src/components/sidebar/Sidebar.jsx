@@ -1,10 +1,15 @@
 import SearchForm from "./SearchForm";
 import ChatSelection from "./ChatSelection.jsx";
 import UserInfoPanel from "./UserInfoPanel.jsx";
-import { useState } from "react";
+import QueryResults from "./QueryResults.jsx";
+import { useSelector, useDispatch } from "react-redux";
+import { setSearchMode as setSearchModeReducer } from "../../features/sidebar/sidebarSlice";
 
 export function Sidebar() {
-  const [searchMode, setSearchMode] = useState(false);
+  const searchMode = useSelector((state) => state.sidebar.searchMode);
+  const dispatch = useDispatch();
+  const setSearchMode = (searchMode) =>
+    dispatch(setSearchModeReducer(searchMode));
 
   return (
     <aside
@@ -34,7 +39,7 @@ export function Sidebar() {
       </header>
 
       <nav className={["overflow-y-auto", "h-full", "p-4"].join(" ")}>
-        <ChatSelection />
+        {searchMode ? <QueryResults /> : <ChatSelection />}
       </nav>
 
       <footer
