@@ -1,15 +1,19 @@
-import { useState } from "react";
-export function SearchForm({ searchMode, setSearchMode }) {
-  const [query, setQuery] = useState("");
-  
-  const onSearchInputFocus = () => setSearchMode(true);
+import { useSelector, useDispatch } from "react-redux";
+import { setSearchMode, setQuery } from "../../features/sidebar/sidebarSlice";
+
+export function SearchForm() {
+  const searchMode = useSelector((state) => state.sidebar.searchMode);
+  const query = useSelector((state) => state.sidebar.query);
+  const dispatch = useDispatch();
+
+  const onSearchInputFocus = () => dispatch(setSearchMode(true));
   const onBackButtonClick = () => {
-    setSearchMode(false);
-    setQuery("");
+    dispatch(setSearchMode(false));
+    dispatch(setQuery(""));
   };
   const onSearchInputChange = (event) => {
     const newQuery = event.target.value;
-    setQuery(newQuery);
+    dispatch(setQuery(newQuery));
   };
 
   return (
