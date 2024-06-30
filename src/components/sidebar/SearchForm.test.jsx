@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, fireEvent } from "@testing-library/react";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import SearchForm from "./SearchForm.jsx";
 import { Provider } from "react-redux";
 
@@ -51,5 +51,16 @@ describe("SearchForm Component", () => {
         payload: "",
       },
     ]);
+  });
+
+  it("automatically updates the query value when changing the input field value", () => {
+    renderComponent(true);
+    const searchInput = document.getElementById("search-input");
+    fireEvent.focus(searchInput);
+    fireEvent.change(searchInput, { target: { value: "new query" } });
+    expect(getLatestAction()).toEqual({
+      type: "sidebar/setQuery",
+      payload: "new query",
+    });
   });
 });
