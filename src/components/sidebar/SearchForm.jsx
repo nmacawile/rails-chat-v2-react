@@ -1,19 +1,26 @@
 import { useSelector, useDispatch } from "react-redux";
+import { useState, useCallback, useMemo } from "react";
 import { setSearchMode, setQuery } from "../../features/sidebar/sidebarSlice";
+import debouncer from "../../lib/debouncer";
 
 export function SearchForm() {
   const searchMode = useSelector((state) => state.sidebar.searchMode);
-  const query = useSelector((state) => state.sidebar.query);
-  const dispatch = useDispatch();
+  const [inputValue, setInputValue] = useState("");
 
+  const dispatch = useDispatch();
+  const debouncedDispatch = useCallback(debouncer(dispatch), [dispatch]);
+  
   const onSearchInputFocus = () => dispatch(setSearchMode(true));
   const onBackButtonClick = () => {
     dispatch(setSearchMode(false));
-    dispatch(setQuery(""));
+    setInputValue("");
+    debouncedDispatch(setQuery(""));
   };
+
   const onSearchInputChange = (event) => {
     const newQuery = event.target.value;
-    dispatch(setQuery(newQuery));
+    setInputValue(newQuery);
+    debouncedDispatch(setQuery(newQuery));
   };
 
   return (
@@ -94,7 +101,7 @@ export function SearchForm() {
           <input
             type="text"
             id="search-input"
-            value={query}
+            value={inputValue}
             onChange={onSearchInputChange}
             onFocus={onSearchInputFocus}
             className={[

@@ -37,30 +37,34 @@ describe("SearchForm Component", () => {
     });
   });
 
-  it("exits search mode and clears the search query when the back button is clicked", () => {
+  it("exits search mode and clears the search query when the back button is clicked", async () => {
     renderComponent(true);
     const backButton = document.getElementById("search-back-button");
     fireEvent.click(backButton);
-    expect(store.getActions().slice(-2)).toEqual([
-      {
-        type: "sidebar/setSearchMode",
-        payload: false,
-      },
-      {
-        type: "sidebar/setQuery",
-        payload: "",
-      },
-    ]);
+    await waitFor(() => {
+      expect(store.getActions().slice(-2)).toEqual([
+        {
+          type: "sidebar/setSearchMode",
+          payload: false,
+        },
+        {
+          type: "sidebar/setQuery",
+          payload: "",
+        },
+      ]);
+    });
   });
 
-  it("automatically updates the query value when changing the input field value", () => {
+  it("automatically updates the query value when changing the input field value", async () => {
     renderComponent(true);
     const searchInput = document.getElementById("search-input");
     fireEvent.focus(searchInput);
     fireEvent.change(searchInput, { target: { value: "new query" } });
-    expect(getLatestAction()).toEqual({
-      type: "sidebar/setQuery",
-      payload: "new query",
+    await waitFor(() => {
+      expect(getLatestAction()).toEqual({
+        type: "sidebar/setQuery",
+        payload: "new query",
+      });
     });
   });
 });
