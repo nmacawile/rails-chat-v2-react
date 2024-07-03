@@ -10,12 +10,23 @@ import { Provider } from "react-redux";
 import store from "./store/store";
 import debouncer from "./lib/debouncer.js";
 import { saveState } from "./storage/localStorage.js";
+import ChatWindow from "./components/ChatWindow.jsx";
+import { ChatRoot } from "./components/ChatRoot.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    children: [{ path: "", element: <Home /> }],
+    children: [
+      {
+        path: "",
+        element: <Home />,
+        children: [
+          { path: "", element: <ChatRoot /> },
+          { path: "/chats/:id", element: <ChatWindow /> },
+        ],
+      },
+    ],
   },
   {
     path: "/auth",

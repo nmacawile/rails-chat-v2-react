@@ -10,3 +10,14 @@ export const getChats = async () => {
     throw new Error(errorMessage);
   }
 };
+
+export const getChat = async (id) => {
+  try {
+    const response = await axiosAuthInstance.get(`/api/v1/chats/${id}`);
+    return response.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message;
+    console.error("Service error:", errorMessage);
+    throw new Error(errorMessage);
+  }
+};
