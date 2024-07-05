@@ -1,16 +1,31 @@
 import "../stylesheets/ChatBar.css";
-import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { postChatMessage } from "../services/chatMessagesService";
 
 export function ChatBar() {
   const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const { id } = useParams();
+  const messageBoxRef = useRef(null);
 
-  const writeMessage = (e) => {
-    const content = e.target.innerHTML.trim();
+  const updateMessage = (event) => {
+    const content = event.target.innerText.trim();
     setMessage(content);
   };
 
-  const submitMessage = () => {
-    console.log("submit");
+  const submitMessage = async () => {
+    if (sending) return;
+    setSending(true);
+    try {
+      await postChatMessage(id, message);
+      messageBoxRef.current.innerText = "";
+      setMessage("");
+    } catch (error) {
+      console.error("Error sending data.");
+    }
+    setSending(false);
+    // messageBoxRef.current.focus();
   };
 
   const buttonSubmit = (event) => {
@@ -19,18 +34,34 @@ export function ChatBar() {
   };
 
   const keystrokeSubmit = (event) => {
-    if (event.shiftKey && event.key == "Enter") {
+    if (!event.shiftKey && event.key == "Enter") {
       event.preventDefault();
       submitMessage();
     }
   };
+
+  useEffect(() => {
+    messageBoxRef.current.focus();
+  });
 
   return (
     <form className="w-full" onSubmit={buttonSubmit}>
       <div className="flex items-end px-3 py-2">
         <button
           type="button"
-          className="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
+          className={[
+            "inline-flex",
+            "justify-center",
+            "p-2",
+            "text-gray-500",
+            "rounded-lg",
+            "cursor-pointer",
+            "hover:text-gray-900",
+            "hover:bg-gray-100",
+            "dark:text-gray-400",
+            "dark:hover:text-white",
+            "dark:hover:bg-gray-600",
+          ].join(" ")}
         >
           <svg
             className="w-5 h-5"
@@ -62,7 +93,17 @@ export function ChatBar() {
         </button>
         <button
           type="button"
-          className="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
+          className={[
+            "p-2",
+            "text-gray-500",
+            "rounded-lg",
+            "cursor-pointer",
+            "hover:text-gray-900",
+            "hover:bg-gray-100",
+            "dark:text-gray-400",
+            "dark:hover:text-white",
+            "dark:hover:bg-gray-600",
+          ].join(" ")}
         >
           <svg
             className="w-5 h-5"
@@ -84,17 +125,44 @@ export function ChatBar() {
 
         <div
           role="textarea"
-          onBlur={writeMessage}
+          onInput={updateMessage}
           onKeyDown={keystrokeSubmit}
-          dangerouslySetInnerHTML={{ __html: message }}
-          className="mx-4 p-2.5 w-full max-h-32 overflow-y-auto text-sm text-white rounded-sm outline-none focus:ring-4 ring-purple-500 focus:border-purpler-500"
+          ref={messageBoxRef}
+          className={[
+            "mx-4",
+            "p-2.5",
+            "w-full",
+            "max-h-32",
+            "overflow-y-auto",
+            "text-sm",
+            "text-white",
+            "rounded-sm",
+            "outline-none",
+            "focus:ring-4",
+            "ring-purple-500",
+            "focus:border-purpler-500",
+          ].join(" ")}
           placeholder="Aa"
-          contentEditable="true"
+          contentEditable={!sending}
         ></div>
 
         <button
           type="submit"
-          className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600"
+          id="submit-message-button"
+          className={[
+            "inline-flex",
+            "justify-center",
+            "p-2",
+            "text-blue-600",
+            "rounded-full",
+            "cursor-pointer",
+            "hover:bg-blue-100",
+            "disabled:dark:bg-gray-500",
+            "disabled:dark:text-gray-400",
+            "dark:text-blue-500",
+            "dark:hover:bg-purple-600",
+          ].join(" ")}
+          disabled={sending}
         >
           <svg
             className="w-5 h-5 rotate-90 rtl:-rotate-90"
