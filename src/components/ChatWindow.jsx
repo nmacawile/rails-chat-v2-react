@@ -72,6 +72,7 @@ export function ChatWindow() {
                     "px-4",
                     "bg-pink-800",
                     "text-white",
+                    "whitespace-pre-wrap",
                   ].join(" ")}
                 >
                   {message.content}
