@@ -25,7 +25,6 @@ export function ChatBar() {
       console.error("Error sending data.");
     }
     setSending(false);
-    // messageBoxRef.current.focus();
   };
 
   const buttonSubmit = (event) => {

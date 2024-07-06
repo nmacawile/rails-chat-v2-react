@@ -54,7 +54,7 @@ export function ChatWindow() {
         </h2>
       </header>
       <section className="overflow-auto h-full p-4">
-        <ul className="flex flex-col gap-1 justify-start">
+        <ul className="flex flex-col-reverse gap-1 justify-start">
           {chatMessages.map((message, i) => {
             return (
               <li
