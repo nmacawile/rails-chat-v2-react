@@ -41,9 +41,15 @@ export function ChatWindow() {
     fetchEverything();
   }, [id]);
 
-  return loading ? (
+  const loadingPlaceholder = (
     <span className="p-4 text-white animate-pulse">Loading...</span>
-  ) : (
+  );
+
+  const errorPlaceholder = (
+    <span className="p-4 text-white">Error: Cannot load chat.</span>
+  );
+
+  const template = (
     <>
       <header className="flex flex-row gap-4 items-start p-4 border-b border-gray-400/[.8] space-y-2">
         <div>
@@ -87,6 +93,10 @@ export function ChatWindow() {
       </footer>
     </>
   );
+
+  if (loading) return loadingPlaceholder;
+  else if (chat) return template;
+  else return errorPlaceholder;
 }
 
 export default ChatWindow;
