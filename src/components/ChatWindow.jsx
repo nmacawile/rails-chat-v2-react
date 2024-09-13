@@ -1,10 +1,15 @@
 import "../stylesheets/ChatWindow.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useContext, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ChatBar from "./ChatBar";
 import { getChatMessages } from "../services/chatMessagesService";
 import { getChat } from "../services/chatsService";
+import { ReadyState } from "react-use-websocket";
+import { WebSocketContext } from "../contexts/WebSocketContext";
+import { dataFilter, messageFormatter } from "../helpers/webSocketHelpers";
+
+const SubscriptionState = { UNSUBSCRIBED: 0, SUBSCRIBING: 1, SUBSCRIBED: 2 };
 
 export function ChatWindow() {
   const { id } = useParams();
@@ -12,6 +17,8 @@ export function ChatWindow() {
   const [chat, setChat] = useState(null);
   const [loading, setLoading] = useState(true);
   const user = useSelector((state) => state.auth.user);
+  const { sendMessage, lastMessage, readyState } = useContext(WebSocketContext);
+  const subscriptionRef = useRef(SubscriptionState.UNSUBSCRIBED);
 
   const fetchMessages = async () => {
     try {
@@ -36,6 +43,89 @@ export function ChatWindow() {
     await Promise.all([fetchChat(), fetchMessages()]);
     setLoading(false);
   };
+
+  // Filters and displays incoming WebSocket messages
+  // 'sendMessage' is listed as a dependency
+  // to mirror the update of the WebSocket instance
+  // in case of a reconnection.
+  const chatMessageHandler = useCallback(
+    (data) => {
+      const filtered = dataFilter(
+        ({ identifier, message }) => message && identifier.chat_id == id,
+        data
+      );
+      if (filtered) {
+        const chat_message = filtered.message.chat_message;
+        setChatMessages((state) => [chat_message, ...state]);
+      }
+    },
+    [sendMessage, id, setChatMessages]
+  );
+
+  // Prevent duplication of subscriptions caused by React's Strict Mode
+  const subscriptionConfirmationListener = useCallback(
+    (data) => {
+      const filtered = dataFilter(
+        ({ identifier, type }) =>
+          identifier.chat_id == id && type === "confirm_subscription",
+        data
+      );
+      if (filtered) {
+        // console.log(`Subscribed to Chat id ${id}.`);
+        subscriptionRef.current = SubscriptionState.SUBSCRIBED;
+      }
+    },
+    [sendMessage, id, setChatMessages]
+  );
+
+  // Sends a 'subscribe' command to the WebSocket server
+  const subscribeToChannel = useCallback(() => {
+    if (subscriptionRef.current === SubscriptionState.UNSUBSCRIBED) {
+      subscriptionRef.current = SubscriptionState.SUBSCRIBING;
+      // console.log(`Subscribing to Chat id ${id}...`);
+      sendMessage(
+        messageFormatter("subscribe", {
+          channel: "ChatChannel",
+          chat_id: id,
+        })
+      );
+    }
+  }, [sendMessage, id]);
+
+  // Sends an 'unsubscribe' command to the WebSocket server
+  const unsubscribeFromChannel = useCallback(() => {
+    if (subscriptionRef.current === SubscriptionState.SUBSCRIBED) {
+      subscriptionRef.current = SubscriptionState.UNSUBSCRIBED;
+      // console.log(`Unsubscribed from Chat id ${id}.`);
+      sendMessage(
+        messageFormatter("unsubscribe", {
+          channel: "ChatChannel",
+          chat_id: id,
+        })
+      );
+    }
+  }, [sendMessage, id]);
+
+  // Handles incoming WebSocket messages
+  useEffect(() => {
+    if (lastMessage?.data) {
+      const data = JSON.parse(lastMessage.data);
+      chatMessageHandler(data);
+      subscriptionConfirmationListener(data);
+    }
+  }, [lastMessage]);
+
+  // Subscribes to the WebSocket server
+  // Unsubscribes when 'id' parameter updates
+  // Automatically subscribes on reconnection
+  useEffect(() => {
+    if (readyState === ReadyState.OPEN) {
+      subscribeToChannel();
+      return () => {
+        unsubscribeFromChannel();
+      };
+    }
+  }, [id, readyState]);
 
   useEffect(() => {
     fetchEverything();
