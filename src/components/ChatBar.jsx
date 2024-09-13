@@ -25,6 +25,9 @@ export function ChatBar() {
       console.error("Error sending data.");
     }
     setSending(false);
+    setTimeout(() => {
+      messageBoxRef.current.focus();
+    }, 0);
   };
 
   const buttonSubmit = (event) => {
@@ -41,7 +44,7 @@ export function ChatBar() {
 
   useEffect(() => {
     messageBoxRef.current.focus();
-  });
+  }, []);
 
   return (
     <form className="w-full" onSubmit={buttonSubmit}>
