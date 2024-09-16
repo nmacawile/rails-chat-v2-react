@@ -6,10 +6,7 @@ import Home from "./components/Home.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./components/auth/Login.jsx";
 import Auth from "./components/auth/Auth.jsx";
-import { Provider } from "react-redux";
-import store from "./store/store";
-import debouncer from "./lib/debouncer.js";
-import { saveState } from "./storage/localStorage.js";
+import { StoreProvider } from "./components/StoreProvider.jsx";
 import ChatWindow from "./components/ChatWindow.jsx";
 import { ChatRoot } from "./components/ChatRoot.jsx";
 
@@ -35,13 +32,10 @@ const router = createBrowserRouter([
   },
 ]);
 
-const debouncedSaveState = debouncer(saveState, 800);
-store.subscribe(() => debouncedSaveState(store.getState()));
-
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Provider store={store}>
+    <StoreProvider>
       <RouterProvider router={router} />
-    </Provider>
+    </StoreProvider>
   </React.StrictMode>
 );
