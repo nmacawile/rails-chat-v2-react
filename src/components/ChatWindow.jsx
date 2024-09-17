@@ -16,6 +16,7 @@ export function ChatWindow() {
   const [chatMessages, setChatMessages] = useState([]);
   const [chat, setChat] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [otherUser, setOtherUser] = useState(null);
   const user = useSelector((state) => state.auth.user);
   const { sendMessage, lastMessage, readyState } = useContext(WebSocketContext);
   const subscriptionRef = useRef(SubscriptionState.UNSUBSCRIBED);
@@ -115,6 +116,13 @@ export function ChatWindow() {
     }
   }, [lastMessage]);
 
+  useEffect(() => {
+    if (chat) {
+      const otherUser_ = chat.users.find((u) => user.id != u.id);
+      setOtherUser(otherUser_);
+    }
+  }, [chat]);
+
   // Subscribes to the WebSocket server
   // Unsubscribes when 'id' parameter updates
   // Automatically subscribes on reconnection
@@ -146,7 +154,7 @@ export function ChatWindow() {
           <div className="bg-purple-400 h-10 w-10 rounded-full"></div>
         </div>
         <h2 className="text-xl font-bold text-white leading-none">
-          {chat && chat.users[0].full_name}
+          {otherUser?.full_name}
         </h2>
       </header>
       <section className="overflow-auto h-full p-4">
