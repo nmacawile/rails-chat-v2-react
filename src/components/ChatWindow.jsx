@@ -20,6 +20,12 @@ export function ChatWindow() {
   const user = useSelector((state) => state.auth.user);
   const { sendMessage, lastMessage, readyState } = useContext(WebSocketContext);
   const subscriptionRef = useRef(SubscriptionState.UNSUBSCRIBED);
+  // Reference to the scrollable element
+  const scrollableRef = useRef(null);
+  // Stores the last known position of the view inside the scrollable element
+  const lastScrollPosition = useRef(null);
+  // Determines whether to lock scroll position in place or not
+  const [lockScrollPosition, setLockScrollPosition] = useState(false);
 
   const fetchMessages = async () => {
     try {
@@ -123,6 +129,28 @@ export function ChatWindow() {
     }
   }, [chat]);
 
+  // Updates the scrollPosition and sets the state of scroll lock
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = scrollableRef.current;
+    lastScrollPosition.current = scrollTop;
+    setLockScrollPosition(scrollTop + clientHeight !== scrollHeight);
+  };
+
+  // Moves the scroll view to the bottom of the scrollable element
+  const scrollToBottom = () => {
+    if (scrollableRef.current) {
+      const { scrollHeight, clientHeight } = scrollableRef.current;
+      scrollableRef.current.scrollTop = scrollHeight - clientHeight;
+    }
+  };
+
+  // Initializes the scroll view position to the bottom of the scrollable element
+  useEffect(() => {
+    if (chatMessages.length && lastScrollPosition.current === null) {
+      scrollToBottom();
+    }
+  }, [chatMessages]);
+
   // Subscribes to the WebSocket server
   // Unsubscribes when 'id' parameter updates
   // Automatically subscribes on reconnection
@@ -135,8 +163,16 @@ export function ChatWindow() {
     }
   }, [id, readyState]);
 
+  // Set scroll position lock to 'false' initially.
+  // The window scrolls to the newest message automatically
+  // as the client receives a message from the WebSocket
   useEffect(() => {
     fetchEverything();
+    setLockScrollPosition(false);
+
+    return () => {
+      lastScrollPosition.current = null;
+    };
   }, [id]);
 
   const loadingPlaceholder = (
@@ -157,7 +193,12 @@ export function ChatWindow() {
           {otherUser?.full_name}
         </h2>
       </header>
-      <section className="overflow-auto h-full p-4">
+      <section
+        className="overflow-auto h-full p-4"
+        ref={scrollableRef}
+        onScroll={handleScroll}
+        style={{ overflowAnchor: lockScrollPosition ? "none" : "auto" }}
+      >
         <ul className="flex flex-col-reverse gap-1 justify-start">
           {chatMessages.map((message, i) => {
             return (
