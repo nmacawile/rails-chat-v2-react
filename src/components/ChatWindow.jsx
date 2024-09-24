@@ -219,6 +219,7 @@ export function ChatWindow() {
                     "text-white",
                     "whitespace-pre-wrap",
                   ].join(" ")}
+                  style={{ wordBreak: "break-word" }}
                 >
                   {message.content}
                 </p>
