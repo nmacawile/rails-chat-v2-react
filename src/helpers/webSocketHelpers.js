@@ -11,3 +11,8 @@ export const dataFilter = (filterFn, data) => {
     if (identifier && filterFn({ message, type, identifier })) return data;
   }
 };
+
+export const serverMessageFilter = (filterFn, serverMessage) => {
+  const data = serverMessage?.data && JSON.parse(serverMessage?.data);
+  return dataFilter(filterFn, data);
+};
