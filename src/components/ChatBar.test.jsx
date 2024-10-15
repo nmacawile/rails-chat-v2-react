@@ -34,6 +34,10 @@ describe("ChatBar Component", () => {
     vi.resetAllMocks();
   });
 
+  it("has the submit button disabled initially", () => {
+    expect(submitButton).toBeDisabled();
+  });
+
   it("sends the message after hitting the submit button", async () => {
     postChatMessage = vi.fn();
 
@@ -63,6 +67,22 @@ describe("ChatBar Component", () => {
     });
 
     expect(postChatMessage).toHaveBeenCalledWith("1", "Bonjour!");
+  });
+
+  it("prevents sending the message if the message is blank", async () => {
+    postChatMessage = vi.fn();
+
+    await act(() => {
+      fireEvent.input(messageBox, { target: { innerText: "    " } });
+      fireEvent.blur(messageBox);
+    });
+
+    await act(() => {
+      fireEvent.click(submitButton);
+    });
+
+    expect(submitButton).toBeDisabled();
+    expect(postChatMessage).not.toHaveBeenCalledWith();
   });
 
   it("prevents sending the message after hitting Shift and Enter keys simultaneously", async () => {

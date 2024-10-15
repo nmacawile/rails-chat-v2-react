@@ -5,26 +5,30 @@ import { postChatMessage } from "../services/chatMessagesService";
 
 export function ChatBar() {
   const [message, setMessage] = useState("");
-  const [sending, setSending] = useState(false);
+  const [sendingBlocked, setSendingBlocked] = useState(true);
+  const [editingBlocked, setEditingBlocked] = useState(false);
   const { id } = useParams();
   const messageBoxRef = useRef(null);
 
   const updateMessage = (event) => {
     const content = event.target.innerText.trim();
+    setSendingBlocked(!content);
     setMessage(content);
   };
 
   const submitMessage = async () => {
-    if (sending) return;
-    setSending(true);
+    if (sendingBlocked) return;
+    setSendingBlocked(true);
+    setEditingBlocked(true);
     try {
       await postChatMessage(id, message);
       messageBoxRef.current.innerText = "";
       setMessage("");
     } catch (error) {
       console.error("Error sending data.");
+      setSendingBlocked(false);
     }
-    setSending(false);
+    setEditingBlocked(false);
     setTimeout(() => {
       messageBoxRef.current.focus();
     }, 0);
@@ -142,10 +146,10 @@ export function ChatBar() {
             "outline-none",
             "focus:ring-4",
             "ring-purple-500",
-            "focus:border-purpler-500",
+            "focus:border-purple-500",
           ].join(" ")}
           placeholder="Aa"
-          contentEditable={!sending}
+          contentEditable={!editingBlocked}
         ></div>
 
         <button
@@ -164,7 +168,7 @@ export function ChatBar() {
             "dark:text-blue-500",
             "dark:hover:bg-purple-600",
           ].join(" ")}
-          disabled={sending}
+          disabled={sendingBlocked}
         >
           <svg
             className="w-5 h-5 rotate-90 rtl:-rotate-90"
