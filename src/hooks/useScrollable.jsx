@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import debouncer from "../lib/debouncer";
 
 export function useScrollable(scrollableRef, scrollableBottomRef) {
+  const threshold = 128;
   const [autoScroll, setAutoScroll] = useState(true);
 
   // Updates autoScroll state based on the scroll position
@@ -10,7 +11,8 @@ export function useScrollable(scrollableRef, scrollableBottomRef) {
     debouncer(() => {
       if (scrollableRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = scrollableRef.current;
-        setAutoScroll(scrollTop + clientHeight === scrollHeight);
+        const scrollPosNearBottom = scrollTop + clientHeight + threshold >= scrollHeight;
+        setAutoScroll(scrollPosNearBottom);
       }
     }, 500),
     []
