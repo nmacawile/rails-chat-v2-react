@@ -1,19 +1,23 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
-import { screen, act, render, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeAll } from "vitest";
+import {
+  screen,
+  act,
+  render,
+  waitFor,
+  fireEvent,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureMockStore from "redux-mock-store";
 import { ChatMessages } from "./ChatMessages.jsx";
 import { authUserFixture } from "../../tests/fixtures/usersFixture";
-import { chatsFixture } from "../../tests/fixtures/chatsFixture";
 import { chatMessagesFixture } from "../../tests/fixtures/chatMessagesFixture";
-import { getChat } from "../services/chatsService";
 import { getChatMessages } from "../services/chatMessagesService";
 import { WebSocketContext } from "../contexts/WebSocketContext.jsx";
 import { MemoryRouter, Routes, Route, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-vi.mock("../services/chatsService");
 vi.mock("../services/chatMessagesService");
+
 const mockStore = configureMockStore([]);
 window.HTMLElement.prototype.scrollIntoView = function () {};
 
@@ -38,9 +42,15 @@ describe("ChatMessages Component", () => {
   let changeMessage;
   let sendMessage = vi.fn();
 
-  const TestComponent = () => {
+  beforeEach(() => {
+    getChatMessages = vi.fn().mockImplementation((id) => {
+      const chatMessages = fetchChatMessages(id);
+      return Promise.resolve(chatMessages);
+    });
+  });
+
+  const TestComponent = ({ chatId }) => {
     const [lastMessage, setLastMessage] = useState(null);
-    const [chatMessages, setChatMessages] = useState(fetchChatMessages(chatId));
     const readyState = 1; // OPEN
 
     useEffect(() => {
@@ -60,11 +70,7 @@ describe("ChatMessages Component", () => {
                 <WebSocketContext.Provider
                   value={{ lastMessage, readyState, sendMessage }}
                 >
-                  <ChatMessages
-                    chatMessages={chatMessages}
-                    setChatMessages={setChatMessages}
-                    id={chatId}
-                  />
+                  <ChatMessages id={chatId} />
                 </WebSocketContext.Provider>
               }
             />
@@ -74,10 +80,10 @@ describe("ChatMessages Component", () => {
     );
   };
 
-  const renderComponent = () => render(<TestComponent />);
+  const renderComponent = (chatId) => render(<TestComponent chatId={chatId} />);
 
   it("shows the chat messages", async () => {
-    await act(() => renderComponent());
+    await act(() => renderComponent(chatId));
     const chatMessages = fetchChatMessages(chatId);
     chatMessages.forEach((m) => {
       const content = screen.getByText(m.content);
@@ -85,8 +91,66 @@ describe("ChatMessages Component", () => {
     });
   });
 
+  describe("loading old chat messages", () => {
+    const chatId = "3";
+    const allChatMessages = fetchChatMessages(chatId).reverse();
+    const firstBatch = allChatMessages.splice(0, 20);
+    const secondBatch = allChatMessages.splice(21, 40);
+    let loadMoreButton;
+
+    beforeEach(async () => {
+      getChatMessages = vi
+        .fn()
+        .mockResolvedValueOnce(firstBatch)
+        .mockResolvedValueOnce(secondBatch);
+
+      await act(() => renderComponent(chatId));
+      await waitFor(() => {
+        loadMoreButton = screen.getByText("Load older messages");
+        expect(loadMoreButton).toBeInTheDocument();
+      });
+    });
+
+    it("initially doesn't render the older chat messages", () => {
+      firstBatch.forEach((m) => {
+        const content = screen.getByText(m.content);
+        expect(content).toBeInTheDocument();
+      });
+
+      secondBatch.forEach((m) => {
+        const content = screen.getByText(m.content);
+        expect(content).not.toBeInTheDocument();
+      });
+    });
+
+    it(
+      "renders the older chat messages after " +
+        "clicking the 'Load more messages' button",
+      async () => {
+        fireEvent.click(loadMoreButton);
+
+        secondBatch.forEach((m) => {
+          const content = screen.getByText(m.content);
+          expect(content).toBeInTheDocument();
+        });
+      }
+    );
+
+    it(
+      "hides the 'Load more messages' button if the number of " +
+        "results of the last request is smaller than the set page size",
+      async () => {
+        fireEvent.click(loadMoreButton);
+
+        await waitFor(() => {
+          expect(loadMoreButton).not.toBeInTheDocument();
+        });
+      }
+    );
+  });
+
   it("subscribes to the Chat channel on mount", async () => {
-    await act(() => renderComponent());
+    await act(() => renderComponent(chatId));
 
     expect(sendMessage).toHaveBeenCalledWith(
       commandMessage("subscribe", chatId)
@@ -94,7 +158,7 @@ describe("ChatMessages Component", () => {
   });
 
   it("displays the received chat message", async () => {
-    await act(() => renderComponent());
+    await act(() => renderComponent(chatId));
     changeMessage({
       data: JSON.stringify({
         identifier: JSON.stringify({ channel: "ChatChannel", chat_id: "1" }),
@@ -115,7 +179,7 @@ describe("ChatMessages Component", () => {
   });
 
   it("doesn't display the received chat message for a different chat id", async () => {
-    await act(() => renderComponent());
+    await act(() => renderComponent(chatId));
 
     changeMessage({
       data: JSON.stringify({

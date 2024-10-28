@@ -2,27 +2,16 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ChatBar from "./ChatBar";
-import { getChatMessages } from "../services/chatMessagesService";
 import { getChat } from "../services/chatsService";
 import ChatMessages from "./ChatMessages.jsx";
 
 export function ChatWindow() {
   const { id } = useParams();
 
-  const [chatMessages, setChatMessages] = useState([]);
   const [chat, setChat] = useState(null);
   const [loading, setLoading] = useState(true);
   const [otherUser, setOtherUser] = useState(null);
   const user = useSelector((state) => state.auth.user);
-
-  const fetchMessages = async () => {
-    try {
-      const _chatMessages = await getChatMessages(id);
-      setChatMessages(_chatMessages);
-    } catch (error) {
-      console.error("Error loading data", error);
-    }
-  };
 
   const fetchChat = async () => {
     try {
@@ -33,9 +22,9 @@ export function ChatWindow() {
     }
   };
 
-  const fetchEverything = async () => {
+  const fetchAsync = async () => {
     setLoading(true);
-    await Promise.all([fetchChat(), fetchMessages()]);
+    await fetchChat();
     setLoading(false);
   };
 
@@ -47,7 +36,7 @@ export function ChatWindow() {
   }, [chat]);
 
   useEffect(() => {
-    fetchEverything();
+    fetchAsync();
   }, [id]);
 
   const loadingPlaceholder = (
@@ -68,11 +57,7 @@ export function ChatWindow() {
           {otherUser?.full_name}
         </h2>
       </header>
-      <ChatMessages
-        id={id}
-        chatMessages={chatMessages}
-        setChatMessages={setChatMessages}
-      />
+      <ChatMessages id={id} />
       <footer className="flex flex-row border-t border-gray-400/[.8]">
         <ChatBar />
       </footer>

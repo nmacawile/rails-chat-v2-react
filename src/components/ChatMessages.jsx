@@ -1,10 +1,26 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useWebSocketSubscription } from "../hooks/useWebSocketSubscription.jsx";
 import "../stylesheets/ChatMessages.css";
 import { useScrollable } from "../hooks/useScrollable.jsx";
+import { getChatMessages } from "../services/chatMessagesService";
 
-export function ChatMessages({ id, chatMessages, setChatMessages }) {
+export function ChatMessages({ id }) {
+  const { user } = useSelector((state) => state.auth);
+  const scrollableRef = useRef(null);
+  const scrollableBottomRef = useRef(null);
+  const {
+    scrollPosition,
+    triggerAutoScroll,
+    scrollToBottom,
+    readjustPositionAfterPrepending,
+  } = useScrollable(scrollableRef, scrollableBottomRef);
+
+  const [chatMessages, setChatMessages] = useState([]);
+  const [hasOlderMessages, setHasOlderMessages] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const initializedRef = useRef(false);
   const channelIdentifier = useMemo(
     () => ({
       channel: "ChatChannel",
@@ -15,10 +31,33 @@ export function ChatMessages({ id, chatMessages, setChatMessages }) {
 
   const channelMessage = useWebSocketSubscription(channelIdentifier);
 
-  const { user } = useSelector((state) => state.auth);
-  const scrollableRef = useRef(null);
-  const scrollableBottomRef = useRef(null);
-  const autoScroll = useScrollable(scrollableRef, scrollableBottomRef);
+  const oldestMessageId = useMemo(() => {
+    const chatMessagesCount = chatMessages.length;
+    if (chatMessagesCount) return chatMessages[chatMessagesCount - 1].id;
+  }, [chatMessages]);
+
+  const fetchMessagesBatch = useCallback(async () => {
+    if (!loading) {
+      setLoading(true);
+      try {
+        const messagesBatch = await getChatMessages(id, oldestMessageId);
+        setChatMessages((state) => [...state, ...messagesBatch]);
+        setHasOlderMessages(messagesBatch.length === 20);
+      } catch (error) {
+        console.error("Error loading data", error);
+      }
+      setLoading(false);
+    }
+  }, [loading, oldestMessageId]);
+
+  const loadPreviousMessages = useCallback(() => {
+    if (hasOlderMessages) readjustPositionAfterPrepending(fetchMessagesBatch);
+  }, [hasOlderMessages, fetchMessagesBatch, readjustPositionAfterPrepending]);
+
+  const loadInitialMessages = async () => {
+    await fetchMessagesBatch();
+    scrollToBottom();
+  };
 
   // Inserts the chat message received from the WebSockets channel
   useEffect(() => {
@@ -30,9 +69,21 @@ export function ChatMessages({ id, chatMessages, setChatMessages }) {
 
   // Adjusts the scroll position to the newly received message
   useEffect(() => {
-    if (autoScroll)
-      scrollableBottomRef.current.scrollIntoView({ behavior: "smooth" });
+    triggerAutoScroll();
   }, [chatMessages]);
+
+  useEffect(() => {
+    if (scrollPosition === "top") {
+      loadPreviousMessages();
+    }
+  }, [scrollPosition]);
+
+  useEffect(() => {
+    if (!initializedRef.current) {
+      initializedRef.current = true;
+      loadInitialMessages();
+    }
+  }, []);
 
   return (
     <section
@@ -40,11 +91,33 @@ export function ChatMessages({ id, chatMessages, setChatMessages }) {
       className="overflow-anchor-none overflow-auto h-full p-4"
       ref={scrollableRef}
     >
+      {hasOlderMessages && (
+        <button
+          onClick={loadPreviousMessages}
+          className={[
+            "block",
+            "text-white",
+            "mx-auto",
+            "mb-4",
+            "font-semibold",
+            "bg-purple-400",
+            "hover:bg-purple-300",
+            "px-4",
+            "py-2",
+            "rounded-md",
+            "disabled:bg-gray-500",
+            "disabled:animate-pulse",
+          ].join(" ")}
+          disabled={loading}
+        >
+          {loading ? "Loading..." : "Load older messages"}
+        </button>
+      )}
       <ul className="flex flex-col-reverse gap-1 justify-start">
-        {chatMessages.map((message, i) => {
+        {chatMessages.map((message) => {
           return (
             <li
-              key={"chat-message-" + i}
+              key={"chat-message-" + message.id}
               className={[
                 `user-${message.id}`,
                 "max-w-[70%]",
