@@ -19,6 +19,7 @@ export function ChatMessages({ id }) {
   const [chatMessages, setChatMessages] = useState([]);
   const [hasOlderMessages, setHasOlderMessages] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [doneInitialLoading, setDoneInitialLoading] = useState(false);
 
   const initializedRef = useRef(false);
   const channelIdentifier = useMemo(
@@ -56,6 +57,7 @@ export function ChatMessages({ id }) {
 
   const loadInitialMessages = async () => {
     await fetchMessagesBatch();
+    setDoneInitialLoading(true);
     scrollToBottom();
   };
 
@@ -85,34 +87,36 @@ export function ChatMessages({ id }) {
     }
   }, []);
 
-  return (
-    <section
-      id="chat-messages"
-      className="overflow-anchor-none overflow-auto h-full p-4"
-      ref={scrollableRef}
+  const messagesPlaceholder = (
+    <div className="text-white animate-pulse">Loading messages...</div>
+  );
+
+  const loadPreviousMessagesButton = (
+    <button
+      onClick={loadPreviousMessages}
+      className={[
+        "block",
+        "text-white",
+        "mx-auto",
+        "mb-4",
+        "font-semibold",
+        "bg-purple-400",
+        "hover:bg-purple-300",
+        "px-4",
+        "py-2",
+        "rounded-md",
+        "disabled:bg-gray-500",
+        "disabled:animate-pulse",
+      ].join(" ")}
+      disabled={loading}
     >
-      {hasOlderMessages && (
-        <button
-          onClick={loadPreviousMessages}
-          className={[
-            "block",
-            "text-white",
-            "mx-auto",
-            "mb-4",
-            "font-semibold",
-            "bg-purple-400",
-            "hover:bg-purple-300",
-            "px-4",
-            "py-2",
-            "rounded-md",
-            "disabled:bg-gray-500",
-            "disabled:animate-pulse",
-          ].join(" ")}
-          disabled={loading}
-        >
-          {loading ? "Loading..." : "Load older messages"}
-        </button>
-      )}
+      {loading ? "Loading..." : "Load older messages"}
+    </button>
+  );
+
+  const messagesTemplate = (
+    <>
+      {hasOlderMessages && loadPreviousMessagesButton}
       <ul className="flex flex-col-reverse gap-1 justify-start">
         {chatMessages.map((message) => {
           return (
@@ -141,6 +145,16 @@ export function ChatMessages({ id }) {
           );
         })}
       </ul>
+    </>
+  );
+
+  return (
+    <section
+      id="chat-messages"
+      className="overflow-anchor-none overflow-auto h-full p-4"
+      ref={scrollableRef}
+    >
+      {!doneInitialLoading ? messagesPlaceholder : messagesTemplate}
       <div ref={scrollableBottomRef}></div>
     </section>
   );

@@ -82,6 +82,12 @@ describe("ChatMessages Component", () => {
 
   const renderComponent = (chatId) => render(<TestComponent chatId={chatId} />);
 
+  it("shows a placeholder while loading the first batch of messages", () => {
+    renderComponent(chatId);
+    const placeholder = screen.getByText("Loading messages...");
+    expect(placeholder).toBeInTheDocument();
+  });
+
   it("shows the chat messages", async () => {
     await act(() => renderComponent(chatId));
     const chatMessages = fetchChatMessages(chatId);
