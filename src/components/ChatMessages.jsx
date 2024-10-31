@@ -8,13 +8,13 @@ import { getChatMessages } from "../services/chatMessagesService";
 export function ChatMessages({ id }) {
   const { user } = useSelector((state) => state.auth);
   const scrollableRef = useRef(null);
-  const scrollableBottomRef = useRef(null);
+  const autoScrollAnchorRef = useRef(null);
   const {
     scrollPosition,
     triggerAutoScroll,
-    scrollToBottom,
+    scrollToAnchor,
     readjustPositionAfterPrepending,
-  } = useScrollable(scrollableRef, scrollableBottomRef);
+  } = useScrollable(scrollableRef, autoScrollAnchorRef);
 
   const [chatMessages, setChatMessages] = useState([]);
   const [hasOlderMessages, setHasOlderMessages] = useState(false);
@@ -58,7 +58,7 @@ export function ChatMessages({ id }) {
   const loadInitialMessages = async () => {
     await fetchMessagesBatch();
     setDoneInitialLoading(true);
-    scrollToBottom();
+    scrollToAnchor();
   };
 
   // Inserts the chat message received from the WebSockets channel
@@ -155,7 +155,7 @@ export function ChatMessages({ id }) {
       ref={scrollableRef}
     >
       {!doneInitialLoading ? messagesPlaceholder : messagesTemplate}
-      <div ref={scrollableBottomRef}></div>
+      <div ref={autoScrollAnchorRef}></div>
     </section>
   );
 }

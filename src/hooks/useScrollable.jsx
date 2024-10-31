@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import debouncer from "../lib/debouncer";
 
-export function useScrollable(scrollableRef, scrollableBottomRef) {
+export function useScrollable(scrollableRef, autoScrollAnchorRef) {
   const threshold = 128;
   const [scrollPosition, setScrollPosition] = useState();
 
@@ -23,7 +23,7 @@ export function useScrollable(scrollableRef, scrollableBottomRef) {
   );
 
   const triggerAutoScroll = () => {
-    if (scrollPosition === "bottom") scrollToBottom({ behavior: "smooth" });
+    if (scrollPosition === "bottom") scrollToAnchor({ behavior: "smooth" });
   };
 
   const readjustPositionAfterPrepending = useCallback(async (callbackFn) => {
@@ -37,10 +37,10 @@ export function useScrollable(scrollableRef, scrollableBottomRef) {
     }, 0);
   }, []);
 
-  const scrollToBottom = (params = {}) => {
+  const scrollToAnchor = (params = {}) => {
     setTimeout(() => {
-      if (scrollableBottomRef.current)
-        scrollableBottomRef.current.scrollIntoView(params);
+      if (autoScrollAnchorRef.current)
+        autoScrollAnchorRef.current.scrollIntoView(params);
     }, 0);
   };
 
@@ -49,14 +49,14 @@ export function useScrollable(scrollableRef, scrollableBottomRef) {
     if (scrollableRef.current)
       scrollableRef.current.onscroll = debouncedScrollHandler;
 
-    if (scrollableBottomRef.current)
-      scrollableBottomRef.current.scrollIntoView();
+    if (autoScrollAnchorRef.current)
+      autoScrollAnchorRef.current.scrollIntoView();
   }, []);
 
   return {
     triggerAutoScroll,
     scrollPosition,
-    scrollToBottom,
+    scrollToAnchor,
     readjustPositionAfterPrepending,
   };
 }
