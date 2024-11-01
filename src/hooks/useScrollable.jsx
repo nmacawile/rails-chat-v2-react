@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import debouncer from "../lib/debouncer";
 
-export function useScrollable(scrollableRef, autoScrollAnchorRef) {
-  const threshold = 128;
-  const [scrollPosition, setScrollPosition] = useState();
+export function useScrollable(scrollableRef, autoScrollAnchorRef, config = {}) {
+  const threshold = config.threshold || 128;
+  const defaultPosition = config.defaultPosition || "bottom";
+  const debouncerTimeout = config.debouncerTimeout || 500;
+
+  const [scrollPosition, setScrollPosition] = useState(defaultPosition);
 
   // Updates autoScroll state based on the scroll position
   // Debounced to accommodate for the transition while the scroll position shifts to the newest message
@@ -11,14 +14,16 @@ export function useScrollable(scrollableRef, autoScrollAnchorRef) {
     debouncer(() => {
       if (scrollableRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = scrollableRef.current;
+        // Scrollable area is too small
+        if (threshold * 2 >= scrollHeight) setScrollPosition(defaultPosition);
         // Position near bottom
-        if (scrollTop + clientHeight + threshold >= scrollHeight)
+        else if (scrollTop + clientHeight + threshold >= scrollHeight)
           setScrollPosition("bottom");
         // Position near top
         else if (scrollTop <= threshold) setScrollPosition("top");
         else setScrollPosition("middle");
       }
-    }, 500),
+    }, debouncerTimeout),
     []
   );
 
