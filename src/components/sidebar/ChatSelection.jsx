@@ -24,7 +24,7 @@ export function ChatSelection() {
   }, []);
 
   return (
-    <>
+    <nav className={["overflow-y-auto", "h-full", "p-4"].join(" ")}>
       {loading ? (
         <span className="text-white animate-pulse">Loading...</span>
       ) : (
@@ -66,7 +66,7 @@ export function ChatSelection() {
           })}
         </ul>
       )}
-    </>
+    </nav>
   );
 }
 

@@ -38,9 +38,7 @@ export function Sidebar() {
         <SearchForm searchMode={searchMode} setSearchMode={setSearchMode} />
       </header>
 
-      <nav className={["overflow-y-auto", "h-full", "p-4"].join(" ")}>
-        {searchMode ? <QueryResults /> : <ChatSelection />}
-      </nav>
+      {searchMode ? <QueryResults /> : <ChatSelection />}
 
       <footer
         className={[
