@@ -1,9 +1,9 @@
 import axiosAuthInstance from "../axios/axiosAuthInstance";
 
-export const queryUsers = async (query = "") => {
+export const queryUsers = async (q = "", { per_page = 20, page = 1 } = {}) => {
   try {
     const response = await axiosAuthInstance.get("/api/v1/users", {
-      params: { q: query },
+      params: { q, page, per_page },
     });
     return response.data;
   } catch (error) {
