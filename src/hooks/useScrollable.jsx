@@ -16,6 +16,9 @@ export function useScrollable(scrollableRef, autoScrollAnchorRef, config = {}) {
         const { scrollTop, scrollHeight, clientHeight } = scrollableRef.current;
         // Scrollable area is too small
         if (threshold * 2 >= scrollHeight) setScrollPosition(defaultPosition);
+        // No scrollbar
+        else if (clientHeight === scrollHeight)
+          setScrollPosition(defaultPosition);
         // Position near bottom
         else if (scrollTop + clientHeight + threshold >= scrollHeight)
           setScrollPosition("bottom");
@@ -51,11 +54,22 @@ export function useScrollable(scrollableRef, autoScrollAnchorRef, config = {}) {
 
   // Initially set the scroll position to the bottom of the scrollable element
   useEffect(() => {
-    if (scrollableRef.current)
-      scrollableRef.current.onscroll = debouncedScrollHandler;
-
     if (autoScrollAnchorRef.current)
       autoScrollAnchorRef.current.scrollIntoView();
+
+    if (scrollableRef.current) {
+      scrollableRef.current.onscroll = debouncedScrollHandler;
+
+      const mutationObserver = new MutationObserver(debouncedScrollHandler);
+      mutationObserver.observe(scrollableRef.current, {
+        childList: true,
+        subtree: true,
+      });
+
+      return () => {
+        mutationObserver.disconnect();
+      };
+    }
   }, []);
 
   return {
