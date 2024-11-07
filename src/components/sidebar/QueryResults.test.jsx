@@ -8,7 +8,9 @@ import {
   usersFixture,
 } from "../../../tests/fixtures/usersFixture";
 import { queryUsers } from "../../services/queryService";
+import { useNavigate } from "react-router-dom";
 
+vi.mock("react-router-dom");
 vi.mock("../../services/queryService");
 const mockStore = configureMockStore([]);
 

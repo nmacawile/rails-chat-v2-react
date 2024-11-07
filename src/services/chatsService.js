@@ -21,3 +21,16 @@ export const getChat = async (id) => {
     throw new Error(errorMessage);
   }
 };
+
+export const findOrCreateChat = async (userId) => {
+  try {
+    const response = await axiosAuthInstance.post(
+      `/api/v1/chats/find_or_create/${userId}`
+    );
+    return response.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message;
+    console.error("Service error:", errorMessage);
+    throw new Error(errorMessage);
+  }
+};
