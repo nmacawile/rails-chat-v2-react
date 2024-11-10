@@ -1,12 +1,20 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getChats } from "../../services/chatsService";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { useWebSocketSubscription } from "../../hooks/useWebSocketSubscription";
 
 export function ChatSelection() {
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const auth_user = useSelector((state) => state.auth.user);
+
+  const channelIdentifier = {
+    channel: "NotificationsChannel",
+    user_id: auth_user.id,
+  };
+
+  const channelMessage = useWebSocketSubscription(channelIdentifier);
 
   const loadChats = async () => {
     setLoading(true);
@@ -18,6 +26,30 @@ export function ChatSelection() {
     }
     setLoading(false);
   };
+
+  const updateChat = (index, chat) => {
+    setChats((state) => {
+      const chatListSize = state.length;
+      return [
+        ...state.slice(0, index),
+        chat,
+        ...state.slice(index + 1, chatListSize),
+      ];
+    });
+  };
+
+  const appendChat = (chat) => {
+    setChats((state) => [chat, ...state]);
+  };
+
+  useEffect(() => {
+    if (channelMessage) {
+      const { chat } = channelMessage.message;
+      const index = chats.findIndex((c) => c.id === chat.id);
+      if (index >= 0) updateChat(index, chat);
+      else appendChat(chat);
+    }
+  }, [channelMessage]);
 
   useEffect(() => {
     loadChats();

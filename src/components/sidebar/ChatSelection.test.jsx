@@ -5,8 +5,13 @@ import { Provider } from "react-redux";
 import ChatSelection from "./ChatSelection";
 import { getChats } from "../../services/chatsService";
 import { chatsFixture } from "../../../tests/fixtures/chatsFixture";
-import { authUserFixture } from "../../../tests/fixtures/usersFixture";
+import {
+  authUserFixture,
+  usersFixture,
+} from "../../../tests/fixtures/usersFixture";
 import { BrowserRouter } from "react-router-dom";
+import { WebSocketContext } from "../../contexts/WebSocketContext";
+import { useEffect, useState } from "react";
 
 const mockStore = configureMockStore([]);
 vi.mock("../../services/chatsService");
@@ -18,14 +23,40 @@ describe("ChatSelection Component", () => {
     },
   });
 
-  const renderComponent = () =>
-    render(
+  const commandMessage = (command, id) =>
+    JSON.stringify({
+      command: command,
+      identifier: JSON.stringify({ channel: "NotificationsChannel", user_id: id }),
+    });
+
+  let changeMessage = vi.fn();
+  let sendMessage = vi.fn();
+
+  const TestComponent = () => {
+    const [lastMessage, setLastMessage] = useState(null);
+    const readyState = 1; // OPEN
+
+    useEffect(() => {
+      changeMessage = setLastMessage;
+      return () => {
+        changeMessage = null;
+      };
+    }, []);
+
+    return (
       <Provider store={store}>
         <BrowserRouter>
-          <ChatSelection />
+          <WebSocketContext.Provider
+            value={{ lastMessage, readyState, sendMessage }}
+          >
+            <ChatSelection />
+          </WebSocketContext.Provider>
         </BrowserRouter>
       </Provider>
     );
+  };
+
+  const renderComponent = () => render(<TestComponent />);
 
   afterEach(() => {
     vi.clearAllMocks();
@@ -89,5 +120,64 @@ describe("ChatSelection Component", () => {
     const placeholder = screen.queryByText("Loading...");
 
     expect(placeholder).not.toBeInTheDocument();
+  });
+
+  it("subscribes to the Notifications channel on mount", async () => {
+    await act(() => renderComponent());
+
+    expect(sendMessage).toHaveBeenCalledWith(
+      commandMessage("subscribe", 999)
+    );
+  });
+
+  it("updates the chat item that received a message", async () => {
+    getChats = vi.fn().mockResolvedValue(chatsFixture);
+    await act(() => renderComponent());
+
+    const user2 = usersFixture[0];
+    const chat = { ...chatsFixture[0] };
+    chat.latest_message = { content: "How is it going?", user: user2 };
+
+    act(() => {
+      changeMessage({
+        data: JSON.stringify({
+          identifier: JSON.stringify({
+            channel: "NotificationsChannel",
+            user_id: 999,
+          }),
+          message: { chat },
+        }),
+      });
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText("How is it going?")).toBeInTheDocument();
+    });
+  });
+
+  it("appends the chat item when a new chat receives a message", async () => {
+    getChats = vi.fn().mockResolvedValue(chatsFixture);
+    await act(() => renderComponent());
+
+    const unknownUser = usersFixture[44];
+    const chat = { ...chatsFixture[0] };
+    chat.latest_message = { content: "How is it going?", user: unknownUser };
+    chat.id = 99;
+
+    act(() => {
+      changeMessage({
+        data: JSON.stringify({
+          identifier: JSON.stringify({
+            channel: "NotificationsChannel",
+            user_id: 999,
+          }),
+          message: { chat },
+        }),
+      });
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText("How is it going?")).toBeInTheDocument();
+    });
   });
 });
