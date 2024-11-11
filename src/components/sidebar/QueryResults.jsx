@@ -21,7 +21,7 @@ export function QueryResults() {
   const page = useRef(1);
   const perPage = 20;
 
-  const sendUserQueryRequest = useCallback(async () => {
+  const sendUserQueryRequest = useCallback(async (callbackFn) => {
     if (!loading) {
       setLoading(true);
       try {
@@ -29,8 +29,8 @@ export function QueryResults() {
           page: page.current,
           per_page: perPage,
         });
+        callbackFn(results);
         setHasMoreResults(results.length === perPage);
-        setUsers((state) => [...state, ...results]);
       } catch (error) {
         console.error("Error loading data", error);
       }
@@ -40,26 +40,33 @@ export function QueryResults() {
 
   const loadInitialQueryResults = useCallback(async () => {
     setDoneInitialLoading(false);
-    await sendUserQueryRequest();
+    await sendUserQueryRequest((results) => {
+      setUsers(results);
+    });
     setDoneInitialLoading(true);
+  }, [sendUserQueryRequest]);
+
+  const loadMoreQueryResults = useCallback(() => {
+    sendUserQueryRequest((results) => {
+      setUsers((state) => [...state, ...results]);
+    });
   }, [sendUserQueryRequest]);
 
   useEffect(() => {
     page.current = 1;
-    setUsers([]);
     loadInitialQueryResults();
   }, [query]);
 
   useEffect(() => {
     if (scrollPosition === "bottom") {
       page.current++;
-      sendUserQueryRequest();
+      loadMoreQueryResults();
     }
   }, [scrollPosition]);
 
   const sendUserQueryRequestButton = (
     <button
-      onClick={sendUserQueryRequest}
+      onClick={loadMoreQueryResults}
       className={[
         "block",
         "text-white",
