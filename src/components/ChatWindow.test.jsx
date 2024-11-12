@@ -57,13 +57,15 @@ describe("ChatWindow Component", () => {
     expect(placeholder).toBeInTheDocument();
   });
 
-  it("shows the name of the other chat user", async () => {
+  it("shows the name and handle of the other chat user", async () => {
     await act(() => renderComponent());
     const chat = chatsFixture.find((c) => c.id == 1);
     const otherUser = chat.users.find((u) => u.id !== authUserFixture.id);
 
     const otherUserFullNameElement = screen.getByText(otherUser.full_name);
+    const otherUserHandleElement = screen.getByText(otherUser.handle);
 
     expect(otherUserFullNameElement).toBeInTheDocument();
+    expect(otherUserHandleElement).toBeInTheDocument();
   });
 });

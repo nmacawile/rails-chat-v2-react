@@ -49,13 +49,16 @@ export function ChatWindow() {
 
   const template = (
     <>
-      <header className="flex flex-row gap-4 items-start p-4 border-b border-gray-400/[.8] space-y-2">
+      <header className="flex flex-row gap-4 items-start p-4 border-b border-gray-400/[.8]">
         <div>
           <div className="bg-purple-400 h-10 w-10 rounded-full"></div>
         </div>
-        <h2 className="text-xl font-bold text-white leading-none">
-          {otherUser?.full_name}
-        </h2>
+        <div className="flex flex-col">
+          <h2 className="text-xl font-bold text-white leading-none ">
+            {otherUser?.full_name}
+          </h2>
+          <span className="text-gray-400 user-handle">{otherUser?.handle}</span>
+        </div>
       </header>
       <ChatMessages id={id} />
       <footer className="flex flex-row border-t border-gray-400/[.8]">
