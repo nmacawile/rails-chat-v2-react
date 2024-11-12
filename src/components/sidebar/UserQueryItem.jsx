@@ -30,7 +30,7 @@ export function UserQueryItem({ user }) {
         onClick={() => navigateToChat()}
       >
         <div className="w-8 h-8 bg-purple-400 me-2 rounded-full"></div>
-        <div className="flex flex-col">
+        <div className="flex flex-col text-left">
           <span className="font-semibold text-md leading-none">
             {user.full_name}
           </span>
