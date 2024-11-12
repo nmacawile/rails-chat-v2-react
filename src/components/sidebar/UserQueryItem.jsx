@@ -34,8 +34,8 @@ export function UserQueryItem({ user }) {
           <span className="font-semibold text-md leading-none">
             {user.full_name}
           </span>
-          <span className="group-hover:text-white text-gray-400 text-sm">
-            @{user.handle}
+          <span className="group-hover:text-white text-gray-400 text-sm user-handle">
+            {user.handle}
           </span>
         </div>
       </button>
