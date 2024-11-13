@@ -149,14 +149,57 @@ export function ChatMessages({ id }) {
   );
 
   return (
-    <section
-      id="chat-messages"
-      className="overflow-anchor-none overflow-auto h-full p-4"
-      ref={scrollableRef}
-    >
-      {!doneInitialLoading ? messagesPlaceholder : messagesTemplate}
-      <div ref={autoScrollAnchorRef}></div>
-    </section>
+    <div className="relative overflow-auto h-full">
+      <button
+        className={[
+          "absolute",
+          "justify-center",
+          "p-2",
+          "bg-purple-400",
+          "rounded-full",
+          "cursor-pointer",
+          "hover:bg-purple-100",
+          "disabled:dark:bg-gray-500",
+          "disabled:dark:text-gray-400",
+          "dark:text-purple-500",
+          "dark:hover:bg-purple-600",
+          "rounded-full",
+          "bottom-0",
+          "left-1/2",
+          "-translate-x-1/2",
+          "bottom-4",
+        ].join(" ")}
+        hidden={scrollPosition === "bottom"}
+        onClick={() => scrollToAnchor({ behavior: "smooth" })}
+      >
+        <svg
+          className="w-6 h-6 text-gray-800 dark:text-white"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M12 19V5m0 14-4-4m4 4 4-4"
+          />
+        </svg>
+        <span className="sr-only">Send message</span>
+      </button>
+      <section
+        id="chat-messages"
+        className="overflow-anchor-none overflow-auto h-full p-4"
+        ref={scrollableRef}
+      >
+        {!doneInitialLoading ? messagesPlaceholder : messagesTemplate}
+        <div ref={autoScrollAnchorRef}></div>
+      </section>
+    </div>
   );
 }
 
