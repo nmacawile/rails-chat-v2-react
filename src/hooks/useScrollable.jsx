@@ -1,17 +1,17 @@
 import { useState, useEffect, useCallback } from "react";
-import debouncer from "../lib/debouncer";
+import throttler from "../lib/throttler";
 
 export function useScrollable(scrollableRef, autoScrollAnchorRef, config = {}) {
   const threshold = config.threshold || 128;
   const defaultPosition = config.defaultPosition || "bottom";
-  const debouncerTimeout = config.debouncerTimeout || 500;
+  const throttlerInterval = config.throttlerInterval || 500;
 
   const [scrollPosition, setScrollPosition] = useState(defaultPosition);
 
   // Updates autoScroll state based on the scroll position
   // Debounced to accommodate for the transition while the scroll position shifts to the newest message
-  const debouncedScrollHandler = useCallback(
-    debouncer(() => {
+  const throttledScrollHandler = useCallback(
+    throttler(() => {
       if (scrollableRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = scrollableRef.current;
         // Scrollable area is too small
@@ -26,7 +26,7 @@ export function useScrollable(scrollableRef, autoScrollAnchorRef, config = {}) {
         else if (scrollTop <= threshold) setScrollPosition("top");
         else setScrollPosition("middle");
       }
-    }, debouncerTimeout),
+    }, throttlerInterval),
     []
   );
 
@@ -58,9 +58,9 @@ export function useScrollable(scrollableRef, autoScrollAnchorRef, config = {}) {
       autoScrollAnchorRef.current.scrollIntoView();
 
     if (scrollableRef.current) {
-      scrollableRef.current.onscroll = debouncedScrollHandler;
+      scrollableRef.current.onscroll = throttledScrollHandler;
 
-      const mutationObserver = new MutationObserver(debouncedScrollHandler);
+      const mutationObserver = new MutationObserver(throttledScrollHandler);
       mutationObserver.observe(scrollableRef.current, {
         childList: true,
         subtree: true,

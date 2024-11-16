@@ -16,7 +16,6 @@ export function QueryResults() {
   const { scrollPosition } = useScrollable(scrollableRef, autoScrollAnchorRef, {
     threshold: 64,
     defaultPosition: "top",
-    debouncerTimeout: 300,
   });
   const page = useRef(1);
   const perPage = 20;
