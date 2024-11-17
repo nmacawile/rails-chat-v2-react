@@ -57,19 +57,8 @@ export function useScrollable(scrollableRef, autoScrollAnchorRef, config = {}) {
     if (autoScrollAnchorRef.current)
       autoScrollAnchorRef.current.scrollIntoView();
 
-    if (scrollableRef.current) {
+    if (scrollableRef.current)
       scrollableRef.current.onscroll = throttledScrollHandler;
-
-      const mutationObserver = new MutationObserver(throttledScrollHandler);
-      mutationObserver.observe(scrollableRef.current, {
-        childList: true,
-        subtree: true,
-      });
-
-      return () => {
-        mutationObserver.disconnect();
-      };
-    }
   }, []);
 
   return {
