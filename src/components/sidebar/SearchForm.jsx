@@ -22,6 +22,10 @@ export function SearchForm() {
     setInputValue(newQuery);
     debouncedDispatch(setQuery(newQuery));
   };
+  
+  const onFormSubmit = (event) => {
+    event.preventDefault();
+  }
 
   return (
     <div className="flex flex-row gap-2 items-center">
@@ -70,7 +74,9 @@ export function SearchForm() {
         </button>
       )}
 
-      <form className="w-full">
+      <form id="search-form"
+            className="w-full"
+            onSubmit={onFormSubmit}>
         <div className="relative">
           <div
             className={[

@@ -67,4 +67,17 @@ describe("SearchForm Component", () => {
       });
     });
   });
+
+  it("blocks form submission", () => {
+    renderComponent(true);
+    const searchForm = document.getElementById("search-form");
+    expect(searchForm).toBeInTheDocument();
+
+    const submitEvent = new Event("submit", { bubbles: true, cancellable: true });
+    const preventDefault = vi.fn();
+    submitEvent.preventDefault = preventDefault;
+
+    searchForm.dispatchEvent(submitEvent);
+    expect(preventDefault).toHaveBeenCalled();
+  });
 });
