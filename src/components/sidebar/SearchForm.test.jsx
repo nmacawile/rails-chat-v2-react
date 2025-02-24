@@ -73,11 +73,33 @@ describe("SearchForm Component", () => {
     const searchForm = document.getElementById("search-form");
     expect(searchForm).toBeInTheDocument();
 
-    const submitEvent = new Event("submit", { bubbles: true, cancellable: true });
+    const submitEvent = new Event("submit", {
+      bubbles: true,
+      cancellable: true,
+    });
     const preventDefault = vi.fn();
     submitEvent.preventDefault = preventDefault;
 
     searchForm.dispatchEvent(submitEvent);
     expect(preventDefault).toHaveBeenCalled();
+  });
+
+  it("initially does not show the input clear button", () => {
+    renderComponent(true);
+    const searchInputClearButton = document.getElementById(
+      "search-input-clear-button"
+    );
+    expect(searchInputClearButton).not.toBeInTheDocument();
+  });
+
+  it("shows the input clear button when the it is not empty", () => {
+    renderComponent(true);
+    const searchInput = document.getElementById("search-input");
+    fireEvent.focus(searchInput);
+    fireEvent.change(searchInput, { target: { value: "new query" } });
+    const searchInputClearButton = document.getElementById(
+      "search-input-clear-button"
+    );
+    expect(searchInputClearButton).toBeInTheDocument();
   });
 });

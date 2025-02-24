@@ -1,15 +1,16 @@
 import { useSelector, useDispatch } from "react-redux";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import { setSearchMode, setQuery } from "../../features/sidebar/sidebarSlice";
 import debouncer from "../../lib/debouncer";
 
 export function SearchForm() {
   const searchMode = useSelector((state) => state.sidebar.searchMode);
   const [inputValue, setInputValue] = useState("");
+  const searchInputRef = useRef(null);
 
   const dispatch = useDispatch();
   const debouncedDispatch = useCallback(debouncer(dispatch), [dispatch]);
-  
+
   const onSearchInputFocus = () => dispatch(setSearchMode(true));
   const onBackButtonClick = () => {
     dispatch(setSearchMode(false));
@@ -22,10 +23,16 @@ export function SearchForm() {
     setInputValue(newQuery);
     debouncedDispatch(setQuery(newQuery));
   };
-  
+
   const onFormSubmit = (event) => {
     event.preventDefault();
-  }
+  };
+
+  const onFormClear = (event) => {
+    setInputValue("");
+    debouncedDispatch(setQuery(""));
+    searchInputRef.current.focus();
+  };
 
   return (
     <div className="flex flex-row gap-2 items-center">
@@ -74,9 +81,7 @@ export function SearchForm() {
         </button>
       )}
 
-      <form id="search-form"
-            className="w-full"
-            onSubmit={onFormSubmit}>
+      <form id="search-form" className="w-full" onSubmit={onFormSubmit}>
         <div className="relative">
           <div
             className={[
@@ -104,36 +109,70 @@ export function SearchForm() {
               />
             </svg>
           </div>
-          <input
-            type="text"
-            id="search-input"
-            value={inputValue}
-            onChange={onSearchInputChange}
-            onFocus={onSearchInputFocus}
-            className={[
-              "block",
-              "bg-gray-50",
-              "border",
-              "border-gray-300",
-              "text-gray-900",
-              "text-sm",
-              "rounded-full",
-              "focus:ring-4",
-              "focus:ring-blue-500",
-              "focus:border-blue-500",
-              "w-full",
-              "ps-12",
-              "p-2.5",
-              "outline-none",
-              "dark:bg-gray-700",
-              "dark:border-gray-600",
-              "dark:placeholder-gray-400",
-              "dark:text-white",
-              "dark:focus:ring-purple-800",
-              "dark:focus:border-purple-800",
-            ].join(" ")}
-            placeholder="Search Users"
-          />
+
+          <div className={["flex"].join(" ")}>
+            <input
+              type="text"
+              id="search-input"
+              ref={searchInputRef}
+              value={inputValue}
+              onChange={onSearchInputChange}
+              onFocus={onSearchInputFocus}
+              className={[
+                "block",
+                "w-full",
+                "rounded-full",
+                "bg-gray-50",
+                "border",
+                "border-gray-300",
+                "text-gray-900",
+                "text-sm",
+                "focus:ring-4",
+                "focus:ring-blue-500",
+                "focus:border-blue-500",
+                "px-12",
+                "py-2.5",
+                "outline-none",
+                "dark:bg-gray-700",
+                "dark:border-gray-600",
+                "dark:placeholder-gray-400",
+                "dark:text-white",
+                "dark:focus:ring-purple-800",
+                "dark:focus:border-purple-800",
+              ].join(" ")}
+              placeholder="Search Users"
+            />
+            {inputValue !== "" && (
+              <button
+                id="search-input-clear-button"
+                type="button"
+                className={[
+                  "absolute",
+                  "inset-y-0",
+                  "end-0",
+                  "flex",
+                  "items-center",
+                  "pe-3",
+                ].join(" ")}
+                onClick={onFormClear}
+              >
+                <svg
+                  className="w-6 h-6 text-gray-800 dark:text-gray-500 dark:hover:text-white "
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeWidth="2"
+                    d="M6 18 17.94 6M18 18 6.06 6"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
       </form>
     </div>
