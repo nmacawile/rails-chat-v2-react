@@ -9,6 +9,8 @@ export const chatsFixture = [
         last_name: "User",
         full_name: "First User",
         handle: "firstuser",
+        presence: false,
+        last_seen: new Date().toISOString(),
       },
       {
         id: 999,
@@ -16,6 +18,8 @@ export const chatsFixture = [
         last_name: "Bar",
         full_name: "Foo Bar",
         handle: "foo.bar",
+        presence: false,
+        last_seen: new Date().toISOString(),
       },
     ],
     latest_message: {
@@ -39,6 +43,8 @@ export const chatsFixture = [
         last_name: "User",
         full_name: "Second User",
         handle: "seconduser",
+        presence: false,
+        last_seen: new Date().toISOString(),
       },
       {
         id: 999,
@@ -46,6 +52,8 @@ export const chatsFixture = [
         last_name: "Bar",
         full_name: "Foo Bar",
         handle: "foo.bar",
+        presence: false,
+        last_seen: new Date().toISOString(),
       },
     ],
     latest_message: {
@@ -69,6 +77,8 @@ export const chatsFixture = [
         last_name: "User",
         full_name: "Third User",
         handle: "thirduser",
+        presence: false,
+        last_seen: new Date().toISOString(),
       },
       {
         id: 999,
@@ -76,6 +86,8 @@ export const chatsFixture = [
         last_name: "Bar",
         full_name: "Foo Bar",
         handle: "foo.bar",
+        presence: false,
+        last_seen: new Date().toISOString(),
       },
     ],
     latest_message: {
@@ -99,6 +111,8 @@ export const chatsFixture = [
         last_name: "User",
         full_name: "Fourth User",
         handle: "fourthuser",
+        presence: false,
+        last_seen: new Date().toISOString(),
       },
       {
         id: 999,
@@ -106,6 +120,8 @@ export const chatsFixture = [
         last_name: "Bar",
         full_name: "Foo Bar",
         handle: "foo.bar",
+        presence: false,
+        last_seen: new Date().toISOString(),
       },
     ],
     latest_message: {
@@ -129,6 +145,8 @@ export const chatsFixture = [
         last_name: "User",
         full_name: "Fifth User",
         handle: "fifthuser",
+        presence: false,
+        last_seen: new Date().toISOString(),
       },
       {
         id: 999,
@@ -136,6 +154,8 @@ export const chatsFixture = [
         last_name: "Bar",
         full_name: "Foo Bar",
         handle: "foo.bar",
+        presence: false,
+        last_seen: new Date().toISOString(),
       },
     ],
     latest_message: {

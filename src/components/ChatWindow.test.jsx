@@ -3,13 +3,15 @@ import { screen, act, render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureMockStore from "redux-mock-store";
 import ChatWindow from "./ChatWindow.jsx";
-import { authUserFixture } from "../../tests/fixtures/usersFixture";
+import {
+  authUserFixture,
+  usersFixture,
+} from "../../tests/fixtures/usersFixture";
 import { chatsFixture } from "../../tests/fixtures/chatsFixture";
-import { chatMessagesFixture } from "../../tests/fixtures/chatMessagesFixture";
 import { getChat } from "../services/chatsService";
-import { getChatMessages } from "../services/chatMessagesService";
-import { ChatMessages } from "./ChatMessages.jsx";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { ChannelSubscriptionContext } from "../contexts/ChannelSubscriptionContext.jsx";
+import { useEffect, useState } from "react";
 
 vi.mock("../services/chatsService");
 vi.mock("../services/chatMessagesService");
@@ -23,29 +25,34 @@ describe("ChatWindow Component", () => {
       user: authUserFixture,
     },
   });
+  const chatId = 1;
+  const chat = chatsFixture.find((c) => c.id == chatId);
 
-  const renderComponent = () =>
-    render(
+  let mockPresenceUpdate;
+
+  function TestComponent() {
+    const [presenceUpdate, setPresenceUpdate] = useState();
+
+    useEffect(() => {
+      mockPresenceUpdate = setPresenceUpdate;
+    }, []);
+
+    return (
       <Provider store={store}>
-        <MemoryRouter initialEntries={[`/chats/1`]}>
-          <Routes>
-            <Route path="/chats/:id" element={<ChatWindow />} />
-          </Routes>
-        </MemoryRouter>
+        <ChannelSubscriptionContext.Provider value={presenceUpdate}>
+          <MemoryRouter initialEntries={[`/chats/1`]}>
+            <Routes>
+              <Route path="/chats/:id" element={<ChatWindow />} />
+            </Routes>
+          </MemoryRouter>
+        </ChannelSubscriptionContext.Provider>
       </Provider>
     );
+  }
 
-  getChat = vi.fn().mockImplementation(() => {
-    const chat = chatsFixture.find((c) => c.id == 1);
-    return Promise.resolve(chat);
-  });
+  const renderComponent = () => render(<TestComponent />);
 
-  getChatMessages = vi.fn().mockImplementation(() => {
-    const chatMessages = chatMessagesFixture.filter(
-      (m) => m.messageable_id == 1
-    );
-    return Promise.resolve(chatMessages);
-  });
+  getChat = vi.fn().mockImplementation(() => Promise.resolve(chat));
 
   afterEach(() => {
     vi.clearAllMocks();
@@ -67,5 +74,71 @@ describe("ChatWindow Component", () => {
 
     expect(otherUserFullNameElement).toBeInTheDocument();
     expect(otherUserHandleElement).toBeInTheDocument();
+  });
+
+  it("shows the presence status of the other user in the chat", async () => {
+    await act(() => renderComponent());
+    const presenceIndicator = screen.getByTestId("chat-presence-indicator");
+    expect(presenceIndicator).toBeInTheDocument();
+    expect(presenceIndicator).toHaveClass("bg-gray-500");
+  });
+
+  it("displays the last seen date and time when the other chat user is offline", async () => {
+    await act(() => renderComponent());
+    const presenceStatusText = screen.getByText(/Last seen/);
+    expect(presenceStatusText).toBeInTheDocument();
+  });
+
+  it("sets the color of presence status indicator to green if the other user is online", async () => {
+    const otherUser = {
+      ...usersFixture[0],
+      presence: true,
+      last_seen: new Date().toISOString(),
+    };
+    const chatUsers = [authUserFixture, otherUser];
+    const updatedChat = { ...chat, users: chatUsers };
+    getChat = vi.fn().mockImplementation(() => Promise.resolve(updatedChat));
+    await act(() => renderComponent());
+    const presenceIndicator = screen.getByTestId("chat-presence-indicator");
+  });
+
+  it("changes the color of the presence status indicator from gray to green when the user goes online", async () => {
+    const otherUser = {
+      ...usersFixture[0],
+      presence: false,
+      last_seen: new Date().toISOString(),
+    };
+    const chatUsers = [authUserFixture, otherUser];
+    const updatedChat = { ...chat, users: chatUsers };
+    getChat = vi.fn().mockImplementation(() => Promise.resolve(updatedChat));
+    await act(() => renderComponent());
+    const presenceIndicator = screen.getByTestId("chat-presence-indicator");
+    expect(presenceIndicator).toHaveClass("bg-gray-500");
+
+    act(() => {
+      mockPresenceUpdate({
+        message: {
+          id: otherUser.id,
+          presence: true,
+          last_seen: new Date().toISOString(),
+        },
+      });
+    });
+
+    expect(presenceIndicator).toHaveClass("bg-green-500");
+  });
+
+  it("displays the text 'Online' when the other chat user is online", async () => {
+    const otherUser = {
+      ...usersFixture[0],
+      presence: true,
+      last_seen: new Date().toISOString(),
+    };
+    const chatUsers = [authUserFixture, otherUser];
+    const updatedChat = { ...chat, users: chatUsers };
+    getChat = vi.fn().mockImplementation(() => Promise.resolve(updatedChat));
+    await act(() => renderComponent());
+    const presenceStatusText = screen.getByText(/Online/);
+    expect(presenceStatusText).toBeInTheDocument();
   });
 });

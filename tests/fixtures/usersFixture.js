@@ -5,6 +5,8 @@ export const authUserFixture = {
   full_name: "Foo Bar",
   email: "foobar@email.com",
   handle: "foobar",
+  presence: true,
+  last_seen: new Date().toISOString(),
 };
 
 export const usersFixture = [
@@ -14,6 +16,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "First User",
     handle: "firstuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 2,
@@ -21,6 +25,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Second User",
     handle: "seconduser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 3,
@@ -28,6 +34,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Third User",
     handle: "thirduser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 4,
@@ -35,6 +43,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Fourth User",
     handle: "fourthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 5,
@@ -42,6 +52,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Fifth User",
     handle: "fifthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 6,
@@ -49,6 +61,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Sixth User",
     handle: "sixthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 7,
@@ -56,6 +70,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Seventh User",
     handle: "seventhuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 8,
@@ -63,6 +79,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Eighth User",
     handle: "eighthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 9,
@@ -70,6 +88,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Ninth User",
     handle: "ninthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 10,
@@ -77,6 +97,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Tenth User",
     handle: "tenthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 11,
@@ -84,6 +106,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Eleventh User",
     handle: "eleventhuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 12,
@@ -91,6 +115,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Twelfth User",
     handle: "twelfthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 13,
@@ -98,6 +124,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Thirteenth User",
     handle: "thirteenthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 14,
@@ -105,6 +133,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Fourteenth User",
     handle: "fourteenthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 15,
@@ -112,6 +142,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Fifteenth User",
     handle: "fifteenthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 16,
@@ -119,6 +151,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Sixteenth User",
     handle: "sixteenthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 17,
@@ -126,6 +160,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Seventeenth User",
     handle: "seventeenthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 18,
@@ -133,6 +169,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Eighteenth User",
     handle: "eighteenthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 19,
@@ -140,6 +178,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Nineteenth User",
     handle: "nineteenthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 20,
@@ -147,6 +187,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Twentieth User",
     handle: "twentiethuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 21,
@@ -154,6 +196,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Twenty-first User",
     handle: "twentyfirstuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 22,
@@ -161,6 +205,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Twenty-second User",
     handle: "twentyseconduser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 23,
@@ -168,6 +214,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Twenty-third User",
     handle: "twentythirduser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 24,
@@ -175,6 +223,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Twenty-fourth User",
     handle: "twentyfourthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 25,
@@ -182,6 +232,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Twenty-fifth User",
     handle: "twentyfifthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 26,
@@ -189,6 +241,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Twenty-sixth User",
     handle: "twentysixthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 27,
@@ -196,6 +250,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Twenty-seventh User",
     handle: "twentyseventhuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 28,
@@ -203,6 +259,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Twenty-eighth User",
     handle: "twentyeighthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 29,
@@ -210,6 +268,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Twenty-ninth User",
     handle: "twentyninthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 30,
@@ -217,6 +277,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Thirtieth User",
     handle: "thirtiethuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 31,
@@ -224,6 +286,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Thirty-first User",
     handle: "thirtyfirstuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 32,
@@ -231,6 +295,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Thirty-second User",
     handle: "thirtyseconduser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 33,
@@ -238,6 +304,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Thirty-third User",
     handle: "thirtythirduser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 34,
@@ -245,6 +313,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Thirty-fourth User",
     handle: "thirtyfourthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 35,
@@ -252,6 +322,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Thirty-fifth User",
     handle: "thirtyfifthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 36,
@@ -259,6 +331,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Thirty-sixth User",
     handle: "thirtysixthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 37,
@@ -266,6 +340,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Thirty-seventh User",
     handle: "thirtyseventhuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 38,
@@ -273,6 +349,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Thirty-eighth User",
     handle: "thirtyeighthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 39,
@@ -280,6 +358,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Thirty-ninth User",
     handle: "thirtyninthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 40,
@@ -287,6 +367,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Fortieth User",
     handle: "fortiethuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 41,
@@ -294,6 +376,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Forty-first User",
     handle: "fortyfirstuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 42,
@@ -301,6 +385,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Forty-second User",
     handle: "fortyseconduser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 43,
@@ -308,6 +394,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Forty-third User",
     handle: "fortythirduser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 44,
@@ -315,6 +403,8 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Forty-fourth User",
     handle: "fortyfourthuser",
+    presence: false,
+    last_seen: new Date().toISOString(),
   },
   {
     id: 45,
@@ -322,6 +412,7 @@ export const usersFixture = [
     last_name: "User",
     full_name: "Forty-fifth User",
     handle: "fortyfifthuser",
-  }
-
+    presence: false,
+    last_seen: new Date().toISOString(),
+  },
 ];
