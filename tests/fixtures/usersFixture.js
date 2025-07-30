@@ -7,6 +7,7 @@ export const authUserFixture = {
   handle: "foobar",
   presence: true,
   last_seen: new Date().toISOString(),
+  visibility: true,
 };
 
 export const usersFixture = [
