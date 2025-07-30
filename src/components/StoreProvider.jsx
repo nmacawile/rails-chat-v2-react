@@ -1,16 +1,16 @@
 import { Provider } from "react-redux";
-import debouncer from "../lib/debouncer";
+import throttler from "../lib/throttler";
 import { saveState } from "../storage/localStorage";
 import store from "../store/store";
 import { useRef, useEffect } from "react";
 
 export function StoreProvider({ children }) {
   const subscribedRef = useRef(false);
-  const debouncedSaveState = debouncer(saveState, 5000);
+  const throttledSaveState = throttler(saveState, 500);
 
   useEffect(() => {
     if (!subscribedRef.current) {
-      store.subscribe(() => debouncedSaveState(store.getState()));
+      store.subscribe(() => throttledSaveState(store.getState()));
     }
     subscribedRef.current = true;
   }, []);
