@@ -27,13 +27,33 @@ describe("SearchForm Component", () => {
     expect(backButton).not.toBeInTheDocument();
   });
 
-  it("goes into search mode when the search input is focused on", () => {
+  it("goes into search mode when the search input is clicked on", () => {
     renderComponent();
     const searchInput = document.getElementById("search-input");
-    fireEvent.focus(searchInput);
+    fireEvent.click(searchInput);
     expect(getLatestAction()).toEqual({
       type: "sidebar/setSearchMode",
       payload: true,
+    });
+  });
+
+  it("does not go into search mode when the search input is only focuseed on", () => {
+    renderComponent();
+    const searchInput = document.getElementById("search-input");
+    fireEvent.focus(searchInput);
+    expect(store.getActions()).toEqual([]);
+  });
+
+  it("goes into search mode when changing input field value", async () => {
+    renderComponent(false);
+    const searchInput = document.getElementById("search-input");
+    fireEvent.focus(searchInput);
+    fireEvent.change(searchInput, { target: { value: "new query" } });
+    await waitFor(() => {
+      expect(store.getActions()).toContainEqual({
+        type: "sidebar/setSearchMode",
+        payload: true,
+      });
     });
   });
 

@@ -11,7 +11,7 @@ export function SearchForm() {
   const dispatch = useDispatch();
   const debouncedDispatch = useCallback(debouncer(dispatch), [dispatch]);
 
-  const onSearchInputFocus = () => dispatch(setSearchMode(true));
+  const onSearchInputClick = () => dispatch(setSearchMode(true));
   const onBackButtonClick = () => {
     dispatch(setSearchMode(false));
     setInputValue("");
@@ -19,6 +19,7 @@ export function SearchForm() {
   };
 
   const onSearchInputChange = (event) => {
+    if (!searchMode) dispatch(setSearchMode(true));
     const newQuery = event.target.value;
     setInputValue(newQuery);
     debouncedDispatch(setQuery(newQuery));
@@ -117,7 +118,7 @@ export function SearchForm() {
               ref={searchInputRef}
               value={inputValue}
               onChange={onSearchInputChange}
-              onFocus={onSearchInputFocus}
+              onClick={onSearchInputClick}
               className={[
                 "block",
                 "w-full",
