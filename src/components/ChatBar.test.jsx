@@ -6,6 +6,7 @@ import {
   act,
   waitFor,
 } from "@testing-library/react";
+import { userEvent } from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import ChatBar from "./ChatBar.jsx";
 import { postChatMessage } from "../services/chatMessagesService";
@@ -160,7 +161,17 @@ describe("ChatBar Component", () => {
     fireEvent.click(submitButton);
     await waitFor(() => {
       expect(submitButton.disabled).toBe(true);
-      expect(messageBox).toHaveAttribute("contentEditable", "false");
     });
+  });
+
+  it("prevents the text value to be changed when submission is still in progress", async () => {
+    postChatMessage = vi.fn();
+    await act(() => {
+      fireEvent.input(messageBox, { target: { innerText: "Bonjour!" } });
+
+    });
+    fireEvent.click(submitButton);
+    userEvent.type(messageBox, "a");
+    expect(messageBox.innerText).toBe("Bonjour!");
   });
 });

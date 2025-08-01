@@ -16,6 +16,10 @@ export function ChatBar() {
     setMessage(content);
   };
 
+  const editControl = (event) => {
+    if (editingBlocked) event.preventDefault();
+  };
+
   const submitMessage = async () => {
     if (sendingBlocked) return;
     setSendingBlocked(true);
@@ -29,9 +33,6 @@ export function ChatBar() {
       setSendingBlocked(false);
     }
     setEditingBlocked(false);
-    setTimeout(() => {
-      messageBoxRef.current.focus();
-    }, 0);
   };
 
   const buttonSubmit = (event) => {
@@ -132,6 +133,7 @@ export function ChatBar() {
         <div
           role="textarea"
           onInput={updateMessage}
+          onBeforeInput={editControl}
           onKeyDown={keystrokeSubmit}
           ref={messageBoxRef}
           className={[
@@ -149,7 +151,7 @@ export function ChatBar() {
             "focus:border-purple-500",
           ].join(" ")}
           placeholder="Aa"
-          contentEditable={!editingBlocked}
+          contentEditable="true"
         ></div>
 
         <button
