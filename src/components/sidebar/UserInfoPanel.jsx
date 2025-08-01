@@ -1,26 +1,41 @@
 import { useSelector, useDispatch } from "react-redux";
 import { updateVisibilityThunk } from "../../thunks/userThunks";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import debouncer from "../../lib/debouncer";
 
 export function UserInfoPanel() {
   const { handle, full_name, visibility } = useSelector(
     (state) => state.auth.user
   );
-
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const toggleVisibility = async () => {
-    setLoading(true);
-    try {
-      await dispatch(updateVisibilityThunk(!visibility));
-    } catch (error) {
-      console.error(
-        "There was a problem changing the visibility status",
-        error
-      );
-    }
-    setLoading(false);
-  };
+
+  const [visibilityToggleInput, setVisibilityToggleInput] = useState(false);
+
+  const debouncedVisibilityUpdate = useCallback(
+    debouncer((valueToSet) => {
+      try {
+        dispatch(updateVisibilityThunk(valueToSet));
+      } catch (error) {
+        console.error(
+          "There was a problem changing the visibility status",
+          error
+        );
+      }
+    }, 500),
+    [dispatch, updateVisibilityThunk]
+  );
+
+  const toggleVisibility = useCallback(() => {
+    const newState = !visibilityToggleInput;
+    setVisibilityToggleInput(newState);
+    debouncedVisibilityUpdate(newState);
+  }, [
+    debouncedVisibilityUpdate,
+    visibilityToggleInput,
+    setVisibilityToggleInput,
+  ]);
+
+  useEffect(() => setVisibilityToggleInput(visibility), []);
 
   return (
     <div className="flex flex-row w-full justify-between">
@@ -39,13 +54,12 @@ export function UserInfoPanel() {
           <input
             data-testid="visibility-toggle"
             type="checkbox"
-            checked={visibility}
+            checked={visibilityToggleInput}
             className="sr-only peer"
             onChange={toggleVisibility}
-            disabled={loading}
           />
-          <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-            Online
+          <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 select-none">
+            {visibilityToggleInput ? "Available" : "Invisible"}
           </span>
           <div
             className={[
