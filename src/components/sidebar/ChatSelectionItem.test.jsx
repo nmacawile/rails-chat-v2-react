@@ -4,7 +4,7 @@ import configureMockStore from "redux-mock-store";
 import { render, screen, act } from "@testing-library/react";
 import { useState, useEffect } from "react";
 import { Provider } from "react-redux";
-import { ChannelSubscriptionContext } from "../../contexts/ChannelSubscriptionContext";
+import { SharedChannelSubscriptionsContext } from "../../contexts/SharedChannelSubscriptionsContext";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 
 import {
@@ -27,19 +27,19 @@ describe("ChatSelectionItem Component", () => {
     },
   });
 
-  let mockPresenceUpdate;
+  let mockPresenceUpdates;
 
   function TestComponent(props) {
     const [chat, setChat] = useState(props.chat);
-    const [presenceUpdate, setPresenceUpdate] = useState();
+    const [presenceUpdates, setPresenceUpdates] = useState();
 
     useEffect(() => {
-      mockPresenceUpdate = setPresenceUpdate;
+      mockPresenceUpdates = setPresenceUpdates;
     }, []);
 
     return (
       <Provider store={store}>
-        <ChannelSubscriptionContext.Provider value={presenceUpdate}>
+        <SharedChannelSubscriptionsContext.Provider value={{ presenceUpdates }}>
           <MemoryRouter initialEntries={[`/`]}>
             <Routes>
               <Route
@@ -48,7 +48,7 @@ describe("ChatSelectionItem Component", () => {
               />
             </Routes>
           </MemoryRouter>
-        </ChannelSubscriptionContext.Provider>
+        </SharedChannelSubscriptionsContext.Provider>
       </Provider>
     );
   }
@@ -87,7 +87,7 @@ describe("ChatSelectionItem Component", () => {
     expect(presenceIndicator).toHaveClass("bg-gray-500");
 
     act(() => {
-      mockPresenceUpdate({
+      mockPresenceUpdates({
         message: {
           id: otherUser.id,
           presence: true,

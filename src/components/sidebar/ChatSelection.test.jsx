@@ -12,6 +12,7 @@ import {
 import { BrowserRouter } from "react-router-dom";
 import { WebSocketContext } from "../../contexts/WebSocketContext";
 import { useEffect, useState } from "react";
+import { SharedChannelSubscriptionsContext } from "../../contexts/SharedChannelSubscriptionsContext";
 
 const mockStore = configureMockStore([]);
 vi.mock("../../services/chatsService");
@@ -26,7 +27,10 @@ describe("ChatSelection Component", () => {
   const commandMessage = (command, id) =>
     JSON.stringify({
       command: command,
-      identifier: JSON.stringify({ channel: "NotificationsChannel", user_id: id }),
+      identifier: JSON.stringify({
+        channel: "NotificationsChannel",
+        user_id: id,
+      }),
     });
 
   let changeMessage = vi.fn();
@@ -34,6 +38,7 @@ describe("ChatSelection Component", () => {
 
   const TestComponent = () => {
     const [lastMessage, setLastMessage] = useState(null);
+    const presenceUpdates = null;
     const readyState = 1; // OPEN
 
     useEffect(() => {
@@ -49,7 +54,11 @@ describe("ChatSelection Component", () => {
           <WebSocketContext.Provider
             value={{ lastMessage, readyState, sendMessage }}
           >
-            <ChatSelection />
+            <SharedChannelSubscriptionsContext.Provider
+              value={{ presenceUpdates }}
+            >
+              <ChatSelection />
+            </SharedChannelSubscriptionsContext.Provider>
           </WebSocketContext.Provider>
         </BrowserRouter>
       </Provider>
@@ -125,9 +134,7 @@ describe("ChatSelection Component", () => {
   it("subscribes to the Notifications channel on mount", async () => {
     await act(() => renderComponent());
 
-    expect(sendMessage).toHaveBeenCalledWith(
-      commandMessage("subscribe", 999)
-    );
+    expect(sendMessage).toHaveBeenCalledWith(commandMessage("subscribe", 999));
   });
 
   it("updates the chat item that received a message", async () => {
@@ -148,7 +155,7 @@ describe("ChatSelection Component", () => {
           message: { chat },
         }),
       });
-    })
+    });
 
     await waitFor(() => {
       expect(screen.getByText("How is it going?")).toBeInTheDocument();
@@ -174,7 +181,7 @@ describe("ChatSelection Component", () => {
           message: { chat },
         }),
       });
-    })
+    });
 
     await waitFor(() => {
       expect(screen.getByText("How is it going?")).toBeInTheDocument();

@@ -10,7 +10,7 @@ import {
 import { chatsFixture } from "../../tests/fixtures/chatsFixture";
 import { getChat } from "../services/chatsService";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
-import { ChannelSubscriptionContext } from "../contexts/ChannelSubscriptionContext.jsx";
+import { SharedChannelSubscriptionsContext } from "../contexts/SharedChannelSubscriptionsContext.jsx";
 import { useEffect, useState } from "react";
 
 vi.mock("../services/chatsService");
@@ -28,24 +28,24 @@ describe("ChatWindow Component", () => {
   const chatId = 1;
   const chat = chatsFixture.find((c) => c.id == chatId);
 
-  let mockPresenceUpdate;
+  let mockPresenceUpdates;
 
   function TestComponent() {
-    const [presenceUpdate, setPresenceUpdate] = useState();
+    const [presenceUpdates, setPresenceUpdates] = useState();
 
     useEffect(() => {
-      mockPresenceUpdate = setPresenceUpdate;
+      mockPresenceUpdates = setPresenceUpdates;
     }, []);
 
     return (
       <Provider store={store}>
-        <ChannelSubscriptionContext.Provider value={presenceUpdate}>
+        <SharedChannelSubscriptionsContext.Provider value={{ presenceUpdates }}>
           <MemoryRouter initialEntries={[`/chats/1`]}>
             <Routes>
               <Route path="/chats/:id" element={<ChatWindow />} />
             </Routes>
           </MemoryRouter>
-        </ChannelSubscriptionContext.Provider>
+        </SharedChannelSubscriptionsContext.Provider>
       </Provider>
     );
   }
@@ -116,7 +116,7 @@ describe("ChatWindow Component", () => {
     expect(presenceIndicator).toHaveClass("bg-gray-500");
 
     act(() => {
-      mockPresenceUpdate({
+      mockPresenceUpdates({
         message: {
           id: otherUser.id,
           presence: true,

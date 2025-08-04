@@ -2,22 +2,22 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useContext, useEffect } from "react";
 
-import { ChannelSubscriptionContext } from "../../contexts/ChannelSubscriptionContext";
+import { SharedChannelSubscriptionsContext } from "../../contexts/SharedChannelSubscriptionsContext";
 
 export function ChatSelectionItem({ chat, updateChat }) {
   const auth_user = useSelector((state) => state.auth.user);
 
-  const presenceUpdate = useContext(ChannelSubscriptionContext);
+  const { presenceUpdates } = useContext(SharedChannelSubscriptionsContext);
   const otherUser = chat.users.find((u) => u.id !== auth_user.id);
 
   useEffect(() => {
-    const presenceStatus = presenceUpdate?.message;
+    const presenceStatus = presenceUpdates?.message;
     if (presenceStatus?.id === otherUser.id) {
       const updatedUser = { ...otherUser, ...presenceStatus };
       const updatedChat = { ...chat, users: [auth_user, updatedUser] };
       updateChat(updatedChat);
     }
-  }, [presenceUpdate]);
+  }, [presenceUpdates]);
 
   return (
     <li>

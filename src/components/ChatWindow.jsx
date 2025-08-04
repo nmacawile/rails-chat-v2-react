@@ -4,12 +4,12 @@ import { useSelector } from "react-redux";
 import ChatBar from "./ChatBar";
 import { getChat } from "../services/chatsService";
 import ChatMessages from "./ChatMessages.jsx";
-import { ChannelSubscriptionContext } from "../contexts/ChannelSubscriptionContext.jsx";
+import { SharedChannelSubscriptionsContext } from "../contexts/SharedChannelSubscriptionsContext.jsx";
 
 export function ChatWindow() {
   const { id } = useParams();
 
-  const presenceUpdate = useContext(ChannelSubscriptionContext);
+  const { presenceUpdates } = useContext(SharedChannelSubscriptionsContext);
   const [chat, setChat] = useState(null);
   const [loading, setLoading] = useState(true);
   const [otherUser, setOtherUser] = useState(null);
@@ -38,11 +38,11 @@ export function ChatWindow() {
   }, [chat]);
 
   useEffect(() => {
-    const presenceStatus = presenceUpdate?.message;
+    const presenceStatus = presenceUpdates?.message;
     if (presenceStatus?.id === otherUser?.id) {
       setOtherUser((_otherUser) => ({ ..._otherUser, ...presenceStatus }));
     }
-  }, [presenceUpdate]);
+  }, [presenceUpdates]);
 
   useEffect(() => {
     fetchAsync();
