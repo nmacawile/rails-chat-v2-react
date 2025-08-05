@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import configureMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
@@ -10,7 +10,6 @@ import {
   usersFixture,
 } from "../../../tests/fixtures/usersFixture";
 import { BrowserRouter } from "react-router-dom";
-import { WebSocketContext } from "../../contexts/WebSocketContext";
 import { useEffect, useState } from "react";
 import { SharedChannelSubscriptionsContext } from "../../contexts/SharedChannelSubscriptionsContext";
 
@@ -24,25 +23,14 @@ describe("ChatSelection Component", () => {
     },
   });
 
-  const commandMessage = (command, id) =>
-    JSON.stringify({
-      command: command,
-      identifier: JSON.stringify({
-        channel: "NotificationsChannel",
-        user_id: id,
-      }),
-    });
-
   let changeMessage = vi.fn();
-  let sendMessage = vi.fn();
 
   const TestComponent = () => {
-    const [lastMessage, setLastMessage] = useState(null);
+    const [notifications, setNotifications] = useState(null);
     const presenceUpdates = null;
-    const readyState = 1; // OPEN
 
     useEffect(() => {
-      changeMessage = setLastMessage;
+      changeMessage = setNotifications;
       return () => {
         changeMessage = null;
       };
@@ -51,15 +39,11 @@ describe("ChatSelection Component", () => {
     return (
       <Provider store={store}>
         <BrowserRouter>
-          <WebSocketContext.Provider
-            value={{ lastMessage, readyState, sendMessage }}
+          <SharedChannelSubscriptionsContext.Provider
+            value={{ presenceUpdates, notifications }}
           >
-            <SharedChannelSubscriptionsContext.Provider
-              value={{ presenceUpdates }}
-            >
-              <ChatSelection />
-            </SharedChannelSubscriptionsContext.Provider>
-          </WebSocketContext.Provider>
+            <ChatSelection />
+          </SharedChannelSubscriptionsContext.Provider>
         </BrowserRouter>
       </Provider>
     );
@@ -131,12 +115,6 @@ describe("ChatSelection Component", () => {
     expect(placeholder).not.toBeInTheDocument();
   });
 
-  it("subscribes to the Notifications channel on mount", async () => {
-    await act(() => renderComponent());
-
-    expect(sendMessage).toHaveBeenCalledWith(commandMessage("subscribe", 999));
-  });
-
   it("updates the chat item that received a message", async () => {
     getChats = vi.fn().mockResolvedValue(chatsFixture);
     await act(() => renderComponent());
@@ -146,15 +124,7 @@ describe("ChatSelection Component", () => {
     chat.latest_message = { content: "How is it going?", user: user2 };
 
     act(() => {
-      changeMessage({
-        data: JSON.stringify({
-          identifier: JSON.stringify({
-            channel: "NotificationsChannel",
-            user_id: 999,
-          }),
-          message: { chat },
-        }),
-      });
+      changeMessage({ message: { chat } });
     });
 
     await waitFor(() => {
@@ -173,13 +143,7 @@ describe("ChatSelection Component", () => {
 
     act(() => {
       changeMessage({
-        data: JSON.stringify({
-          identifier: JSON.stringify({
-            channel: "NotificationsChannel",
-            user_id: 999,
-          }),
-          message: { chat },
-        }),
+        message: { chat },
       });
     });
 
