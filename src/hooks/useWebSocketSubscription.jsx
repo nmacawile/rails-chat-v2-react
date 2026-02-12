@@ -77,5 +77,5 @@ export function useWebSocketSubscription(channelIdentifier) {
     }
   }, [readyState]);
 
-  return channelMessage;
+  return { channelMessage, sendMessage };
 }

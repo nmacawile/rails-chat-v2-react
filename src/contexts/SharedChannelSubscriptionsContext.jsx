@@ -16,7 +16,12 @@ export function SharedChannelSubscriptionsProvider({ children }) {
   });
 
   return (
-    <SharedChannelSubscriptionsContext.Provider value={{ presenceUpdates, notifications }}>
+    <SharedChannelSubscriptionsContext.Provider
+      value={{
+        presenceUpdates: presenceUpdates.channelMessage,
+        notifications: notifications.channelMessage,
+      }}
+    >
       {children}
     </SharedChannelSubscriptionsContext.Provider>
   );

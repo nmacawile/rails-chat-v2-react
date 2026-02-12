@@ -30,7 +30,7 @@ export function ChatMessages({ id }) {
     [id]
   );
 
-  const channelMessage = useWebSocketSubscription(channelIdentifier);
+  const { channelMessage } = useWebSocketSubscription(channelIdentifier);
 
   const oldestMessageId = useMemo(() => {
     const chatMessagesCount = chatMessages.length;
