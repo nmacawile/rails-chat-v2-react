@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useEffect } from "react";
 import { useWebSocketSubscription } from "../hooks/useWebSocketSubscription";
 import { useSelector } from "react-redux";
 
@@ -14,6 +14,16 @@ export function SharedChannelSubscriptionsProvider({ children }) {
   const presenceUpdates = useWebSocketSubscription({
     channel: "PresenceChannel",
   });
+
+  useEffect(() => {
+    const presenceRefreshInterval = setInterval(() => {
+      presenceUpdates.performActionOnChannel("refresh_presence");
+    }, 10000);
+
+    return () => {
+      clearInterval(presenceRefreshInterval);
+    };
+  }, []);
 
   return (
     <SharedChannelSubscriptionsContext.Provider

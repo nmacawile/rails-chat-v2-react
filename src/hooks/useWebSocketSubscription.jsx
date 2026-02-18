@@ -14,21 +14,31 @@ export function useWebSocketSubscription(channelIdentifier) {
   const { sendMessage, lastMessage, readyState } = useContext(WebSocketContext);
   const subscriptionRef = useRef(SubscriptionState.UNSUBSCRIBED);
 
+  const sendToChannel = useCallback((command, data = {}) => {
+    sendMessage(
+      messageFormatter(command, channelIdentifier, data)
+    );
+  }, [sendMessage, channelIdentifier]);
+
+  const performActionOnChannel = useCallback((action) => {
+    sendToChannel("message", { action });
+  }, [sendToChannel]);
+
   // Sends a 'subscribe' command to the WebSocket server
   const subscribeToChannel = useCallback(() => {
     if (subscriptionRef.current === SubscriptionState.UNSUBSCRIBED) {
       subscriptionRef.current = SubscriptionState.SUBSCRIBING;
-      sendMessage(messageFormatter("subscribe", channelIdentifier));
+      sendToChannel("subscribe");
     }
-  }, [sendMessage, channelIdentifier]);
+  }, [sendToChannel]);
 
   // Sends an 'unsubscribe' command to the WebSocket server
   const unsubscribeFromChannel = useCallback(() => {
     if (subscriptionRef.current === SubscriptionState.SUBSCRIBED) {
       subscriptionRef.current = SubscriptionState.UNSUBSCRIBED;
-      sendMessage(messageFormatter("unsubscribe", channelIdentifier));
+      sendToChannel("unsubscribe");
     }
-  }, [sendMessage, channelIdentifier]);
+  }, [sendToChannel]);
 
   // Filters and displays incoming WebSocket messages
   // 'sendMessage' is listed as a dependency
@@ -77,5 +87,5 @@ export function useWebSocketSubscription(channelIdentifier) {
     }
   }, [readyState]);
 
-  return { channelMessage, sendMessage };
+  return { channelMessage, performActionOnChannel };
 }

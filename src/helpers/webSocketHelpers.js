@@ -1,8 +1,12 @@
-export const messageFormatter = (command, identifier) =>
-  JSON.stringify({
+export const messageFormatter = (command, identifier, data = {}) => {
+  const message = {
     command,
     identifier: JSON.stringify(identifier),
-  });
+  };
+
+  if (Object.keys(data).length > 0) message.data = JSON.stringify(data);
+  return JSON.stringify(message);
+}
 
 export const dataFilter = (filterFn, data) => {
   if (data) {
